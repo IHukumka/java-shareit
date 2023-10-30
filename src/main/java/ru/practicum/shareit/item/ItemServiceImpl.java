@@ -23,24 +23,22 @@ import ru.practicum.shareit.user.UserService;
 public class ItemServiceImpl implements ItemService {
 
 	private final ItemStorage storage;
-	private final ItemMapper mapper;
-	private final UserMapper userMapper;
 	private final UserService userService;
 	private final ItemRequestStorage itemRequestStorage;
 
 	@Override
 	public List<ItemDto> getAll(Long userId) {
 		if (userId != null) {
-			return storage.findByUser_Id(userId).stream().map(this.mapper::toItemDto).collect(Collectors.toList());
+			return storage.findByUser_Id(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
 		} else {
-			return storage.findAll().stream().map(this.mapper::toItemDto).collect(Collectors.toList());
+			return storage.findAll().stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
 		}
 	}
 
 	@Override
 	public List<ItemDto> getRequestItems(long requestId) {
-		return storage.findByRequest_Id(requestId).stream().map(mapper::toItemDto).peek(x -> x.setRequestId(requestId))
-				.collect(Collectors.toList());
+		return storage.findByRequest_Id(requestId).stream().map(ItemMapper::toItemDto)
+				.peek(x -> x.setRequestId(requestId)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -54,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
 		}
 		String query = text.toLowerCase();
 		return storage.findAllItemsByDescriptionContainingIgnoreCaseAndAvailableTrue(query).stream()
-				.map(this.mapper::toItemDto).collect(Collectors.toList());
+				.map(ItemMapper::toItemDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -64,20 +62,20 @@ public class ItemServiceImpl implements ItemService {
 			itemRequest = itemRequestStorage.findById(itemDto.getRequestId()).get();
 		}
 		userService.checkUser(userId);
-		Item item = mapper.toItem(itemDto);
+		Item item = ItemMapper.toItem(itemDto);
 		if (item.getAvailable() == null || item.getAvailable() == false) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
-		item.setUser(userMapper.toUser(userService.get(userId)));
+		item.setUser(UserMapper.toUser(userService.get(userId)));
 		item.setRequest(itemRequest);
-		ItemDto newItemDto = mapper.toItemDto(storage.save(item));
+		ItemDto newItemDto = ItemMapper.toItemDto(storage.save(item));
 		newItemDto.setRequestId(itemDto.getRequestId());
 		return newItemDto;
 	}
 
 	@Override
 	public ItemDto edit(Long id, ItemDto itemDto, Long userId) {
-		Item newItem = this.mapper.toItem(itemDto);
+		Item newItem = ItemMapper.toItem(itemDto);
 		this.checkItem(id);
 		this.userService.checkUser(userId);
 		Item oldItem = this.storage.findById(id).get();
@@ -87,8 +85,8 @@ public class ItemServiceImpl implements ItemService {
 		Optional.ofNullable(newItem.getName()).ifPresent(oldItem::setName);
 		Optional.ofNullable(newItem.getDescription()).ifPresent(oldItem::setDescription);
 		Optional.ofNullable(newItem.getAvailable()).ifPresent(oldItem::setAvailable);
-		oldItem.setUser(this.userMapper.toUser(this.userService.get(userId)));
-		return this.mapper.toItemDto(this.storage.save(oldItem));
+		oldItem.setUser(UserMapper.toUser(this.userService.get(userId)));
+		return ItemMapper.toItemDto(this.storage.save(oldItem));
 	}
 
 	@Override
@@ -105,7 +103,7 @@ public class ItemServiceImpl implements ItemService {
 	@Override
 	public ItemDto get(Long id) {
 		this.checkItem(id);
-		return this.mapper.toItemDto(storage.findById(id).get());
+		return ItemMapper.toItemDto(storage.findById(id).get());
 	}
 
 	private void checkItem(Long id) {

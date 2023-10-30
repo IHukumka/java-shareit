@@ -1,17 +1,17 @@
 package ru.practicum.shareit.user;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Lazy;
 
 import ru.practicum.shareit.user.dto.UserDto;
 
-@Component
-public class UserMapper {
+@Lazy
+public interface UserMapper {
 
-	public UserDto toUserDto(User user) {
+	public static UserDto toUserDto(User user) {
 		return UserDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail()).build();
 	}
 
-	public User toUser(UserDto userDto) {
+	public static User toUser(UserDto userDto) {
 		User user = new User();
 		user.setId(userDto.getId());
 		user.setName(userDto.getName());

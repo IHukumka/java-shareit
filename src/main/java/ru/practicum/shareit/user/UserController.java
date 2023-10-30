@@ -55,14 +55,6 @@ public class UserController {
 		return ResponseEntity.ok(this.service.get(id));
 	}
 
-	@DeleteMapping
-	@ResponseBody
-	public ResponseEntity<List<UserDto>> deleteAll() {
-		log.info("Получен запрос к эндпоинту: 'DELETE_USERS'. ");
-		service.clearAll();
-		return ResponseEntity.ok(service.getAll());
-	}
-
 	@DeleteMapping(value = "/{id}")
 	@ResponseBody
 	public void delete(@PathVariable Long id) {

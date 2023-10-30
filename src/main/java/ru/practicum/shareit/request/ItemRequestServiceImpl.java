@@ -21,40 +21,38 @@ import ru.practicum.shareit.user.UserService;
 @Service
 @AllArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
-	private final ItemRequestMapper itemRequestMapper;
 	private final UserService userService;
-	private final UserMapper userMapper;
-	private final ItemRequestStorage itemRequestRepository;
+	private final ItemRequestStorage itemRequestStorage;
 	private final ItemService itemService;
 
 	@Override
 	public List<ItemRequestDto> getAllRequests(long userId) {
 		userService.get(userId);
-		return itemRequestRepository.findByUser_Id(userId).stream().map(itemRequestMapper::toItemRequestDto)
+		return itemRequestStorage.findByUser_Id(userId).stream().map(ItemRequestMapper::toItemRequestDto)
 				.peek(x -> x.setItems(itemService.getRequestItems(x.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
 	public ItemRequestDto getRequest(long userId, long requestId) {
 		userService.get(userId);
-		ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(findById(requestId));
+		ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(findById(requestId));
 		itemRequestDto.setItems(itemService.getRequestItems(requestId));
 		return itemRequestDto;
 	}
 
 	@Override
 	public List<ItemRequestDto> getAllUsersRequests(long userId, Pageable pageable) {
-		User user = userMapper.toUser(userService.get(userId));
-		return itemRequestRepository.findByUserIsNot(user, pageable).stream().map(itemRequestMapper::toItemRequestDto)
+		User user = UserMapper.toUser(userService.get(userId));
+		return itemRequestStorage.findByUserIsNot(user, pageable).stream().map(ItemRequestMapper::toItemRequestDto)
 				.peek(x -> x.setItems(itemService.getRequestItems(x.getId()))).collect(Collectors.toList());
 	}
 
 	@Override
 	public ItemRequestDto createRequest(long userId, ItemRequestDto itemRequestDto) {
-		ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
+		ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
 		itemRequest.setCreated(LocalDateTime.now());
-		itemRequest.setUser(userMapper.toUser(userService.get(userId)));
-		itemRequestDto = itemRequestMapper.toItemRequestDto(itemRequestRepository.save(itemRequest));
+		itemRequest.setUser(UserMapper.toUser(userService.get(userId)));
+		itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequestStorage.save(itemRequest));
 		itemRequestDto.setItems(new ArrayList<>());
 		return itemRequestDto;
 	}
@@ -62,7 +60,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 	@Override
 	public ItemRequest findById(long requestId) {
 		try {
-			return itemRequestRepository.findById(requestId).get();
+			return itemRequestStorage.findById(requestId).get();
 		} catch (NoSuchElementException e) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}

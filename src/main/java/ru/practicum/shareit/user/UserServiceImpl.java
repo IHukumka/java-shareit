@@ -18,27 +18,26 @@ import ru.practicum.shareit.user.dto.UserDto;
 public class UserServiceImpl implements UserService {
 
 	private final UserStorage storage;
-	private final UserMapper mapper;
 
 	@Override
 	public List<UserDto> getAll() {
-		return storage.findAll().stream().map(this.mapper::toUserDto).collect(Collectors.toList());
+		return storage.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public UserDto get(Long id) throws ResponseStatusException {
 		this.checkUser(id);
-		return this.mapper.toUserDto(storage.findById(id).get());
+		return UserMapper.toUserDto(storage.findById(id).get());
 	}
 
 	@Override
 	public UserDto edit(Long id, UserDto userDto) throws ResponseStatusException {
-		User newUser = this.mapper.toUser(userDto);
+		User newUser = UserMapper.toUser(userDto);
 		this.checkUser(id);
 		User oldUser = this.storage.findById(id).get();
 		Optional.ofNullable(newUser.getName()).ifPresent(oldUser::setName);
 		Optional.ofNullable(newUser.getEmail()).ifPresent(oldUser::setEmail);
-		return this.mapper.toUserDto(this.storage.save(oldUser));
+		return UserMapper.toUserDto(this.storage.save(oldUser));
 	}
 
 	@Override
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto create(UserDto userDto) throws ResponseStatusException {
 		this.checkEmail(userDto.getEmail());
-		return this.mapper.toUserDto(this.storage.save(this.mapper.toUser(userDto)));
+		return UserMapper.toUserDto(this.storage.save(UserMapper.toUser(userDto)));
 	}
 
 	@Override

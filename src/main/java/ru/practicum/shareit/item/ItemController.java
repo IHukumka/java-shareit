@@ -60,13 +60,6 @@ public class ItemController {
 		return ResponseEntity.ok(this.service.get(id));
 	}
 
-	@DeleteMapping
-	@ResponseBody
-	public void deleteAll() {
-		log.info("Получен запрос к эндпоинту: 'DELETE_ITEMS'. ");
-		service.clearAll();
-	}
-
 	@DeleteMapping(value = "/{id}")
 	@ResponseBody
 	public void delete(@PathVariable Long id) {
