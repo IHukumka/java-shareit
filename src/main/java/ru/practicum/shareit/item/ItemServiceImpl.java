@@ -1,20 +1,33 @@
 package ru.practicum.shareit.item;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.Booking.BookingStatus;
+import ru.practicum.shareit.booking.BookingMapper;
+import ru.practicum.shareit.booking.BookingStorage;
+import ru.practicum.shareit.comment.Comment;
+import ru.practicum.shareit.comment.CommentDto;
+import ru.practicum.shareit.comment.CommentMapper;
+import ru.practicum.shareit.comment.CommentStorage;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestStorage;
+import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
@@ -25,20 +38,142 @@ public class ItemServiceImpl implements ItemService {
 	private final ItemStorage storage;
 	private final UserService userService;
 	private final ItemRequestStorage itemRequestStorage;
+	private final BookingStorage bookingStorage;
+	private final CommentStorage commentStorage;
+
+	private void checkItem(Long id) {
+		boolean isPresent = this.storage.existsById(id);
+		if (!isPresent) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		}
+	}
 
 	@Override
-	public List<ItemDto> getAll(Long userId) {
-		if (userId != null) {
-			return storage.findByUser_Id(userId).stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
-		} else {
-			return storage.findAll().stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
+	public void clearAll() {
+		this.storage.deleteAll();
+
+	}
+
+	@Override
+	public ItemDto create(Long userId, ItemDto itemDto) {
+		userService.checkUser(userId);
+		itemDto.setUser(userService.get(userId));
+		Item item = ItemMapper.toItem(itemDto);
+		if (itemDto.getAvailable() == false) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
+		ItemRequest itemRequest = null;
+		if (itemDto.getRequestId() != null) {
+			itemRequest = itemRequestStorage.findById(itemDto.getRequestId()).get();
+		}
+		item.setUser(UserMapper.toUser(userService.get(userId)));
+		item.setRequest(itemRequest);
+		ItemDto newItemDto = ItemMapper.toItemDto(storage.save(item));
+		newItemDto.setRequestId(itemDto.getRequestId());
+		return newItemDto;
+	}
+
+	@Override
+	public CommentDto createComment(long itemId, long userId, CommentDto commentDto, Pageable pageable) {
+		Item item = ItemMapper.toItem(get(itemId, userId));
+		User user = UserMapper.toUser(userService.get(userId));
+		if (!bookingStorage.findByItem_IdAndBooker_IdAndStatusAndEndBefore(itemId, userId, BookingStatus.APPROVED,
+				LocalDateTime.now(), pageable).isEmpty()) {
+			Comment comment = CommentMapper.toComment(commentDto);
+			comment.setAuthor(user);
+			comment.setItem(item);
+			comment.setCreated(LocalDateTime.now().plusHours(3L));
+			CommentDto newCommentDto = CommentMapper.toDto(commentStorage.save(comment));
+			newCommentDto.setAuthorName(user.getName());
+			return newCommentDto;
+		} else {
+			throw new IllegalArgumentException("Ошибка входящих данных");
+		}
+	}
+
+	@Override
+	public void delete(Long id) {
+		this.storage.deleteById(id);
+	}
+
+	@Override
+	public ItemDto edit(Long id, ItemDto itemDto, Long userId) {
+		this.checkItem(id);
+		this.userService.checkUser(userId);
+		itemDto.setUser(userService.get(userId));
+		Item newItem = ItemMapper.toItem(itemDto);
+		Item oldItem = this.storage.findById(id).get();
+		if (!oldItem.getUser().getId().equals(userId)) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+		}
+		Optional.ofNullable(newItem.getName()).ifPresent(oldItem::setName);
+		Optional.ofNullable(newItem.getDescription()).ifPresent(oldItem::setDescription);
+		Optional.ofNullable(newItem.getAvailable()).ifPresent(oldItem::setAvailable);
+		oldItem.setUser(UserMapper.toUser(this.userService.get(userId)));
+		return ItemMapper.toItemDto(this.storage.save(oldItem));
+	}
+
+	private List<CommentDto> findComments(ItemDto itemWithBookingsDto) {
+		return commentStorage.findByItem_Id(itemWithBookingsDto.getId()).stream()
+				.map(c -> new CommentDto(c.getId(), c.getText(), c.getAuthor().getName(), c.getCreated()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public ItemDto get(Long id, Long userId) {
+		this.checkItem(id);
+		userService.checkUser(userId);
+		Item item = storage.findById(id).get();
+		Pageable pageable = PageRequest.of(0, 10);
+		ItemDto result = itemConverter(userId, item, pageable);
+		return result;
+	}
+
+	@Override
+	public List<ItemDto> getAll(Long userId, Pageable pageable) {
+		return storage.findByUser_IdOrderById(userId, pageable).stream().map(x -> itemConverter(userId, x, pageable))
+				.collect(Collectors.toList());
+	}
+
+	private Booking getLastBooking(Item item) {
+		Optional<Booking> lastBooking = Optional
+				.ofNullable(bookingStorage.findFirstByItem_IdAndStatusAndStartBeforeOrderByStartDesc(item.getId(),
+						BookingStatus.APPROVED, LocalDateTime.now()));
+
+		return lastBooking.orElse(null);
+	}
+
+	private Booking getNextBooking(Item item) {
+		Optional<Booking> nextBooking = Optional
+				.ofNullable(bookingStorage.findFirstByItem_IdAndStatusAndStartAfterOrderByStartAsc(item.getId(),
+						BookingStatus.APPROVED, LocalDateTime.now()));
+		return nextBooking.orElse(null);
 	}
 
 	@Override
 	public List<ItemDto> getRequestItems(long requestId) {
 		return storage.findByRequest_Id(requestId).stream().map(ItemMapper::toItemDto)
 				.peek(x -> x.setRequestId(requestId)).collect(Collectors.toList());
+	}
+
+	private ItemDto itemConverter(long userId, Item item, Pageable pageable) {
+		ItemDto itemDto = ItemMapper.toItemDto(item);
+
+		if (Objects.equals(item.getUser().getId(), userId)) {
+			Booking lastBooking = getLastBooking(item);
+			if (lastBooking != null) {
+				itemDto.setLastBooking(BookingMapper.toBookingDtoL(lastBooking));
+			}
+
+			Booking nextBooking = getNextBooking(item);
+			if (nextBooking != null) {
+				itemDto.setNextBooking(BookingMapper.toBookingDtoL(nextBooking));
+			}
+		}
+
+		List<CommentDto> comments = findComments(itemDto);
+		itemDto.setComments(comments);
+		return itemDto;
 	}
 
 	@Override
@@ -53,63 +188,5 @@ public class ItemServiceImpl implements ItemService {
 		String query = text.toLowerCase();
 		return storage.findAllItemsByDescriptionContainingIgnoreCaseAndAvailableTrue(query).stream()
 				.map(ItemMapper::toItemDto).collect(Collectors.toList());
-	}
-
-	@Override
-	public ItemDto create(Long userId, ItemDto itemDto) {
-		ItemRequest itemRequest = null;
-		if (itemDto.getRequestId() != null) {
-			itemRequest = itemRequestStorage.findById(itemDto.getRequestId()).get();
-		}
-		userService.checkUser(userId);
-		Item item = ItemMapper.toItem(itemDto);
-		if (item.getAvailable() == null || item.getAvailable() == false) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-		}
-		item.setUser(UserMapper.toUser(userService.get(userId)));
-		item.setRequest(itemRequest);
-		ItemDto newItemDto = ItemMapper.toItemDto(storage.save(item));
-		newItemDto.setRequestId(itemDto.getRequestId());
-		return newItemDto;
-	}
-
-	@Override
-	public ItemDto edit(Long id, ItemDto itemDto, Long userId) {
-		Item newItem = ItemMapper.toItem(itemDto);
-		this.checkItem(id);
-		this.userService.checkUser(userId);
-		Item oldItem = this.storage.findById(id).get();
-		if (!oldItem.getUser().getId().equals(userId)) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-		}
-		Optional.ofNullable(newItem.getName()).ifPresent(oldItem::setName);
-		Optional.ofNullable(newItem.getDescription()).ifPresent(oldItem::setDescription);
-		Optional.ofNullable(newItem.getAvailable()).ifPresent(oldItem::setAvailable);
-		oldItem.setUser(UserMapper.toUser(this.userService.get(userId)));
-		return ItemMapper.toItemDto(this.storage.save(oldItem));
-	}
-
-	@Override
-	public void clearAll() {
-		this.storage.deleteAll();
-
-	}
-
-	@Override
-	public void delete(Long id) {
-		this.storage.deleteById(id);
-	}
-
-	@Override
-	public ItemDto get(Long id) {
-		this.checkItem(id);
-		return ItemMapper.toItemDto(storage.findById(id).get());
-	}
-
-	private void checkItem(Long id) {
-		boolean isPresent = this.storage.existsById(id);
-		if (!isPresent) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 }

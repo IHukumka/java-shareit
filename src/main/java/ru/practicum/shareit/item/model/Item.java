@@ -8,9 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,14 +28,9 @@ public class Item {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
-	@NotBlank
-	@Size(max = 255)
 	@Column(name = "name")
 	private String name;
 
-	@NotNull
-	@Size(max = 512)
 	@Column(name = "description")
 	private String description;
 
@@ -52,4 +44,5 @@ public class Item {
 	@ManyToOne
 	@JoinColumn(name = "request_id", referencedColumnName = "id")
 	private ItemRequest request;
+
 }

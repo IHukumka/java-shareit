@@ -46,19 +46,52 @@ public class Booking {
 	private Item item;
 
 	@ManyToOne
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User user;
+	@JoinColumn(name = "booker_id", referencedColumnName = "id")
+	private User booker;
 
 	@Column(name = "status")
 	@Enumerated(EnumType.STRING)
 	private BookingStatus status;
 
-	public enum BookingStatus {
-		WAITING("WAITING"), APPROVED("APPROVED"), REJECTED("REJECTED"), CANCELED("CANCELED");
+	public enum BookingState {
+		ALL("ALL"), CURRENT("CURRENT"), FUTURE("FUTURE"), PAST("PAST"), REJECTED("REJECTED"), WAITING("WAITING");
+
+		@JsonCreator
+		public static BookingState fromName(String name) {
+
+			if (name == null) {
+				return null;
+			}
+
+			switch (name) {
+			case "WAITING": {
+				return WAITING;
+			}
+
+			case "ALL": {
+				return ALL;
+			}
+
+			case "CURRENT": {
+				return CURRENT;
+			}
+
+			case "FUTURE": {
+				return FUTURE;
+			}
+
+			case "REJECTED": {
+				return REJECTED;
+			}
+			default: {
+				throw new UnsupportedOperationException(String.format("Неизвестное состояние: '%s'", name));
+			}
+			}
+		}
 
 		private String name;
 
-		BookingStatus(String name) {
+		BookingState(String name) {
 			this.name = name;
 		}
 
@@ -66,6 +99,10 @@ public class Booking {
 		public String getName() {
 			return name;
 		}
+	}
+
+	public enum BookingStatus {
+		WAITING("WAITING"), APPROVED("APPROVED"), REJECTED("REJECTED"), CANCELED("CANCELED");
 
 		@JsonCreator
 		public static BookingStatus fromName(String name) {
@@ -95,6 +132,17 @@ public class Booking {
 				throw new UnsupportedOperationException(String.format("Неизвестный статус: '%s'", name));
 			}
 			}
+		}
+
+		private String name;
+
+		BookingStatus(String name) {
+			this.name = name;
+		}
+
+		@JsonValue
+		public String getName() {
+			return name;
 		}
 	}
 }

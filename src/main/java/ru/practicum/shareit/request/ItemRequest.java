@@ -21,7 +21,7 @@ import ru.practicum.shareit.user.User;
 @Entity
 @Data
 @Builder
-@Table(name = "item_requests")
+@Table(name = "requests")
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class ItemRequest {

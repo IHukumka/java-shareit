@@ -36,14 +36,14 @@ public class UserController {
 
 	@PostMapping
 	@ResponseBody
-	public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto, String email) {
+	public ResponseEntity<UserDto> create(@RequestBody @Valid UserDto userDto, String email) {
 		log.info("Получен запрос к эндпоинту: 'POST_USERS'. ");
 		return ResponseEntity.ok(this.service.create(userDto));
 	}
 
 	@PatchMapping(value = "/{id}")
 	@ResponseBody
-	public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody UserDto userDto) {
+	public ResponseEntity<UserDto> update(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
 		log.info("Получен запрос к эндпоинту: 'PATCH_USERS'.");
 		return ResponseEntity.ok(this.service.edit(id, userDto));
 	}
