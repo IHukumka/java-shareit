@@ -68,6 +68,6 @@ public class BookingController {
 	@PatchMapping(value = "/{bookingId}")
 	public ResponseEntity<BookingDto> updateBooking(@PathVariable Long bookingId, @RequestParam Boolean approved,
 			@RequestHeader(HEADER_USER_ID) Long userId) {
-		return ResponseEntity.ok(service.patch(bookingId, userId, approved));
+		return ResponseEntity.ok(service.update(bookingId, userId, approved));
 	}
 }

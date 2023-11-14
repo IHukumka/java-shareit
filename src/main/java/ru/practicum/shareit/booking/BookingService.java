@@ -13,7 +13,7 @@ public interface BookingService {
 
 	BookingDto add(long userId, BookingDtoL bookingDto);
 
-	BookingDto patch(long bookingId, long userId, Boolean approved);
+	BookingDto update(long bookingId, long userId, Boolean approved);
 
 	BookingDto get(long userId, long bookingId);
 

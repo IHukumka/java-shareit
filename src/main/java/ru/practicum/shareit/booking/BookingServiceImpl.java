@@ -161,7 +161,7 @@ public class BookingServiceImpl implements BookingService {
 	}
 
 	@Override
-	public BookingDto patch(long bookingId, long userId, Boolean approved) {
+	public BookingDto update(long bookingId, long userId, Boolean approved) {
 		userService.get(userId);
 		Booking booking = BookingMapper.toBooking(get(userId, bookingId));
 		if (booking.getStatus().equals(BookingStatus.APPROVED)) {

@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -113,10 +112,30 @@ public class ItemServiceImpl implements ItemService {
 		return ItemMapper.toItemDto(this.storage.save(oldItem));
 	}
 
-	private List<CommentDto> findComments(ItemDto itemWithBookingsDto) {
-		return commentStorage.findByItem_Id(itemWithBookingsDto.getId()).stream()
+	private List<CommentDto> findComments(ItemDto itemDto) {
+		return commentStorage.findAll().stream().filter(x -> x.getItem().getId().equals(itemDto.getId()))
 				.map(c -> new CommentDto(c.getId(), c.getText(), c.getAuthor().getName(), c.getCreated()))
 				.collect(Collectors.toList());
+	}
+
+	private ItemDto findLastBooking(ItemDto itemDto, long userId, List<Booking> lastBookings) {
+		try {
+			itemDto.setLastBooking(BookingMapper.toBookingDtoL(lastBookings.stream()
+					.filter(x -> x.getItem().getId().equals(itemDto.getId())).collect(Collectors.toList()).get(0)));
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
+		return itemDto;
+	}
+
+	private ItemDto findNextBooking(ItemDto itemDto, long userId, List<Booking> nextBookings) {
+		try {
+			itemDto.setNextBooking(BookingMapper.toBookingDtoL(nextBookings.stream()
+					.filter(x -> x.getItem().getId().equals(itemDto.getId())).collect(Collectors.toList()).get(0)));
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
+		return itemDto;
 	}
 
 	@Override
@@ -124,56 +143,54 @@ public class ItemServiceImpl implements ItemService {
 		this.checkItem(id);
 		userService.checkUser(userId);
 		Item item = storage.findById(id).get();
+		ItemDto result = ItemMapper.toItemDto(item);
 		Pageable pageable = PageRequest.of(0, 10);
-		ItemDto result = itemConverter(userId, item, pageable);
+		if (userId.equals(result.getUser().getId())) {
+			try {
+				result.setLastBooking(
+						BookingMapper.toBookingDtoL(bookingStorage
+								.findByItem_IdAndStatusAndStartBeforeOrderByStartDesc(result.getId(),
+										BookingStatus.APPROVED, LocalDateTime.now(), pageable)
+								.stream().collect(Collectors.toList()).get(0)));
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+			try {
+				result.setNextBooking(
+						BookingMapper.toBookingDtoL(bookingStorage
+								.findByItem_IdAndStatusAndStartAfterOrderByStartAsc(result.getId(),
+										BookingStatus.APPROVED, LocalDateTime.now(), pageable)
+								.stream().collect(Collectors.toList()).get(0)));
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+		}
+		result.setComments(findComments(result));
 		return result;
 	}
 
 	@Override
 	public List<ItemDto> getAll(Long userId, Pageable pageable) {
-		return storage.findByUser_IdOrderById(userId, pageable).stream().map(x -> itemConverter(userId, x, pageable))
+		List<ItemDto> result = storage.findByUser_IdOrderById(userId, pageable).stream().map(ItemMapper::toItemDto)
 				.collect(Collectors.toList());
-	}
-
-	private Booking getLastBooking(Item item) {
-		Optional<Booking> lastBooking = Optional
-				.ofNullable(bookingStorage.findFirstByItem_IdAndStatusAndStartBeforeOrderByStartDesc(item.getId(),
-						BookingStatus.APPROVED, LocalDateTime.now()));
-
-		return lastBooking.orElse(null);
-	}
-
-	private Booking getNextBooking(Item item) {
-		Optional<Booking> nextBooking = Optional
-				.ofNullable(bookingStorage.findFirstByItem_IdAndStatusAndStartAfterOrderByStartAsc(item.getId(),
-						BookingStatus.APPROVED, LocalDateTime.now()));
-		return nextBooking.orElse(null);
+		List<Booking> nextBookings = bookingStorage
+				.findAllByStatusAndStartAfterOrderByStartAsc(BookingStatus.APPROVED, LocalDateTime.now(), pageable)
+				.stream().collect(Collectors.toList());
+		List<Booking> lastBookings = bookingStorage
+				.findAllByStatusAndStartBeforeOrderByStartDesc(BookingStatus.APPROVED, LocalDateTime.now(), pageable)
+				.stream().collect(Collectors.toList());
+		for (ItemDto itemDto : result) {
+			itemDto = findNextBooking(itemDto, userId, nextBookings);
+			itemDto = findLastBooking(itemDto, userId, lastBookings);
+			itemDto.setComments(findComments(itemDto));
+		}
+		return result;
 	}
 
 	@Override
 	public List<ItemDto> getRequestItems(long requestId) {
 		return storage.findByRequest_Id(requestId).stream().map(ItemMapper::toItemDto)
 				.peek(x -> x.setRequestId(requestId)).collect(Collectors.toList());
-	}
-
-	private ItemDto itemConverter(long userId, Item item, Pageable pageable) {
-		ItemDto itemDto = ItemMapper.toItemDto(item);
-
-		if (Objects.equals(item.getUser().getId(), userId)) {
-			Booking lastBooking = getLastBooking(item);
-			if (lastBooking != null) {
-				itemDto.setLastBooking(BookingMapper.toBookingDtoL(lastBooking));
-			}
-
-			Booking nextBooking = getNextBooking(item);
-			if (nextBooking != null) {
-				itemDto.setNextBooking(BookingMapper.toBookingDtoL(nextBooking));
-			}
-		}
-
-		List<CommentDto> comments = findComments(itemDto);
-		itemDto.setComments(comments);
-		return itemDto;
 	}
 
 	@Override
