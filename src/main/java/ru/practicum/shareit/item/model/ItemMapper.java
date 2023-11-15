@@ -9,25 +9,25 @@ import ru.practicum.shareit.user.UserMapper;
 @Lazy
 public interface ItemMapper {
 
-	public static ItemDto toItemDto(Item item) {
-		return ItemDto.builder().id(item.getId()).name(item.getName()).description(item.getDescription())
-				.available(item.getAvailable()).requestId(item.getRequest() != null ? item.getRequest().getId() : null)
-				.user(UserMapper.toUserDto(item.getUser())).build();
-	}
+				public static ItemDto toItemDto(Item item) {
+								return ItemDto.builder().id(item.getId()).name(item.getName()).description(item.getDescription())
+																.available(item.getAvailable()).requestId(item.getRequest() != null ? item.getRequest().getId() : null)
+																.user(UserMapper.toUserDto(item.getUser())).build();
+				}
 
-	public static Item toItem(ItemDto itemDto) {
-		Item item = new Item();
-		item.setId(itemDto.getId());
-		item.setName(itemDto.getName());
-		item.setDescription(itemDto.getDescription());
-		item.setAvailable(itemDto.getAvailable());
-		if (itemDto.getRequestId() != null) {
-			ItemRequest itemRequest = new ItemRequest();
-			itemRequest.setId(itemDto.getRequestId());
-			item.setRequest(itemRequest);
-		}
-		item.setUser(UserMapper.toUser(itemDto.getUser()));
-		return item;
-	}
+				public static Item toItem(ItemDto itemDto) {
+								Item item = new Item();
+								item.setId(itemDto.getId());
+								item.setName(itemDto.getName());
+								item.setDescription(itemDto.getDescription());
+								item.setAvailable(itemDto.getAvailable());
+								if (itemDto.getRequestId() != null) {
+												ItemRequest itemRequest = new ItemRequest();
+												itemRequest.setId(itemDto.getRequestId());
+												item.setRequest(itemRequest);
+								}
+								item.setUser(UserMapper.toUser(itemDto.getUser()));
+								return item;
+				}
 
 }

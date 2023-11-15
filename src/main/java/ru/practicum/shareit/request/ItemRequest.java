@@ -27,18 +27,18 @@ import ru.practicum.shareit.user.User;
 @AllArgsConstructor
 public class ItemRequest {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+				@Id
+				@GeneratedValue(strategy = GenerationType.IDENTITY)
+				private Long id;
 
-	@Size(max = 255)
-	@Column(name = "description")
-	private String description;
+				@Size(max = 255)
+				@Column(name = "description")
+				private String description;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User user;
+				@OneToOne(fetch = FetchType.LAZY)
+				@JoinColumn(name = "user_id", referencedColumnName = "id")
+				private User user;
 
-	@Column(name = "created")
-	private LocalDateTime created;
+				@Column(name = "created")
+				private LocalDateTime created;
 }

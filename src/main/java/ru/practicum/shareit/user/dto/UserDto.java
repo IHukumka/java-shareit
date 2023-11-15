@@ -12,12 +12,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDto {
 
-	private long id;
+				private long id;
 
-	@Size(max = 255)
-	private String name;
+				@Size(max = 255)
+				private String name;
 
-	@Size(max = 255)
-	@Email(message = "Email is incorrect")
-	private String email;
+				@Size(max = 255)
+				@Email(message = "Email is incorrect")
+				private String email;
 }

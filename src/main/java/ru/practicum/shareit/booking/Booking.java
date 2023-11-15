@@ -32,118 +32,122 @@ import ru.practicum.shareit.user.User;
 @AllArgsConstructor
 public class Booking {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+				@Id
+				@GeneratedValue(strategy = GenerationType.IDENTITY)
+				private long id;
 
-	@Column(name = "start_date")
-	private LocalDateTime start;
+				@Column(name = "start_date")
+				private LocalDateTime start;
 
-	@Column(name = "end_date")
-	private LocalDateTime end;
+				@Column(name = "end_date")
+				private LocalDateTime end;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "item_id", referencedColumnName = "id")
-	private Item item;
+				@ManyToOne(fetch = FetchType.LAZY)
+				@JoinColumn(name = "item_id", referencedColumnName = "id")
+				private Item item;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "booker_id", referencedColumnName = "id")
-	private User booker;
+				@ManyToOne(fetch = FetchType.LAZY)
+				@JoinColumn(name = "booker_id", referencedColumnName = "id")
+				private User booker;
 
-	@Column(name = "status")
-	@Enumerated(EnumType.STRING)
-	private BookingStatus status;
+				@Column(name = "status")
+				@Enumerated(EnumType.STRING)
+				private BookingStatus status;
 
-	public enum BookingState {
-		ALL("ALL"), CURRENT("CURRENT"), FUTURE("FUTURE"), PAST("PAST"), REJECTED("REJECTED"), WAITING("WAITING");
+				public enum BookingState {
+								ALL("ALL"), CURRENT("CURRENT"), FUTURE("FUTURE"), PAST("PAST"), REJECTED("REJECTED"), WAITING("WAITING");
 
-		@JsonCreator
-		public static BookingState fromName(String name) {
+								@JsonCreator
+								public static BookingState fromName(String name) {
 
-			if (name == null) {
-				return null;
-			}
+												if (name == null) {
+																return null;
+												}
 
-			switch (name) {
-			case "WAITING": {
-				return WAITING;
-			}
+												switch (name) {
+												case "WAITING": {
+																return WAITING;
+												}
 
-			case "ALL": {
-				return ALL;
-			}
+												case "ALL": {
+																return ALL;
+												}
 
-			case "CURRENT": {
-				return CURRENT;
-			}
+												case "CURRENT": {
+																return CURRENT;
+												}
 
-			case "FUTURE": {
-				return FUTURE;
-			}
+												case "FUTURE": {
+																return FUTURE;
+												}
 
-			case "REJECTED": {
-				return REJECTED;
-			}
-			default: {
-				throw new UnsupportedOperationException(String.format("Неизвестное состояние: '%s'", name));
-			}
-			}
-		}
+												case "PAST": {
+																return PAST;
+												}
 
-		private String name;
+												case "REJECTED": {
+																return REJECTED;
+												}
+												default: {
+																throw new UnsupportedOperationException(String.format("Неизвестное состояние: '%s'", name));
+												}
+												}
+								}
 
-		BookingState(String name) {
-			this.name = name;
-		}
+								private String name;
 
-		@JsonValue
-		public String getName() {
-			return name;
-		}
-	}
+								BookingState(String name) {
+												this.name = name;
+								}
 
-	public enum BookingStatus {
-		WAITING("WAITING"), APPROVED("APPROVED"), REJECTED("REJECTED"), CANCELED("CANCELED");
+								@JsonValue
+								public String getName() {
+												return name;
+								}
+				}
 
-		@JsonCreator
-		public static BookingStatus fromName(String name) {
+				public enum BookingStatus {
+								WAITING("WAITING"), APPROVED("APPROVED"), REJECTED("REJECTED"), CANCELED("CANCELED");
 
-			if (name == null) {
-				return null;
-			}
+								@JsonCreator
+								public static BookingStatus fromName(String name) {
 
-			switch (name) {
-			case "WAITING": {
-				return WAITING;
-			}
+												if (name == null) {
+																return null;
+												}
 
-			case "APPROVED": {
-				return APPROVED;
-			}
+												switch (name) {
+												case "WAITING": {
+																return WAITING;
+												}
 
-			case "REJECTED": {
-				return REJECTED;
-			}
+												case "APPROVED": {
+																return APPROVED;
+												}
 
-			case "CANCELED": {
-				return CANCELED;
-			}
+												case "REJECTED": {
+																return REJECTED;
+												}
 
-			default: {
-				throw new UnsupportedOperationException(String.format("Неизвестный статус: '%s'", name));
-			}
-			}
-		}
+												case "CANCELED": {
+																return CANCELED;
+												}
 
-		private String name;
+												default: {
+																throw new UnsupportedOperationException(String.format("Неизвестный статус: '%s'", name));
+												}
+												}
+								}
 
-		BookingStatus(String name) {
-			this.name = name;
-		}
+								private String name;
 
-		@JsonValue
-		public String getName() {
-			return name;
-		}
-	}
+								BookingStatus(String name) {
+												this.name = name;
+								}
+
+								@JsonValue
+								public String getName() {
+												return name;
+								}
+				}
 }

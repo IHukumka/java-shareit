@@ -14,11 +14,11 @@ import ru.practicum.shareit.item.model.Item;
 @Repository
 public interface ItemStorage extends JpaRepository<Item, Long> {
 
-	List<Item> findByRequest_Id(long requestId);
+				List<Item> findByRequest_Id(long requestId);
 
-	Page<Item> findByUser_IdOrderById(long userId, Pageable pageable);
+				Page<Item> findByUser_IdOrderById(long userId, Pageable pageable);
 
-	@Query("SELECT i FROM Item i WHERE LOWER(i.description) LIKE %:text% AND i.available = true")
-	List<Item> findAllItemsByDescriptionContainingIgnoreCaseAndAvailableTrue(@Param("text") String text);
+				@Query("SELECT i FROM Item i WHERE LOWER(i.description) LIKE %:text% AND i.available = true")
+				List<Item> findAllItemsByDescriptionContainingIgnoreCaseAndAvailableTrue(@Param("text") String text);
 
 }
