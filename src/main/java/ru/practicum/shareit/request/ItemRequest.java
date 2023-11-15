@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,7 +22,7 @@ import ru.practicum.shareit.user.User;
 @Entity
 @Data
 @Builder
-@Table(name = "item_requests")
+@Table(name = "requests")
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class ItemRequest {
@@ -34,7 +35,7 @@ public class ItemRequest {
 	@Column(name = "description")
 	private String description;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
 	private User user;
 

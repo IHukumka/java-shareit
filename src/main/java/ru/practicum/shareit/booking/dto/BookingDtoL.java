@@ -7,19 +7,14 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.Booking.BookingStatus;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
 @Data
 @Builder
-@AllArgsConstructor
-public class BookingDto {
-
-	private Long id;
+public class BookingDtoL {
+	private long id;
 
 	@NotNull
 	@FutureOrPresent
@@ -30,11 +25,7 @@ public class BookingDto {
 	@FutureOrPresent
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime end;
-
-	private ItemDto item;
-
-	private UserDto booker;
-
+	private long itemId;
+	private long bookerId;
 	private BookingStatus status;
-
 }
