@@ -31,20 +31,20 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 @WebMvcTest(controllers = UserController.class)
 class UserControllerTest {
-				@Autowired
-				ObjectMapper mapper;
-				@MockBean
-				UserService userService;
-				@Autowired
-				private MockMvc mvc;
-				private UserDto userDto;
+    @Autowired
+    ObjectMapper mapper;
+    @MockBean
+    UserService userService;
+    @Autowired
+    private MockMvc mvc;
+    private UserDto userDto;
 
-				@BeforeEach
-				void setUp() {
-								userDto = new UserDto(1L, "John", "john.doe@mail.com");
-				}
+    @BeforeEach
+    void setUp() {
+        userDto = new UserDto(1L, "John", "john.doe@mail.com");
+    }
 
-	@Test
+ @Test
     void getUserById() throws Exception {
         when(userService.get(anyLong()))
                 .thenReturn(userDto);
@@ -57,7 +57,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
     }
 
-	@Test
+ @Test
     void getAllUsers() throws Exception {
         when(userService.getAll())
                 .thenReturn(List.of(userDto));
@@ -71,7 +71,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].email", is(userDto.getEmail())));
     }
 
-	@Test
+ @Test
     void createUser() throws Exception {
         when(userService.create(any()))
                 .thenReturn(userDto);
@@ -87,7 +87,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
     }
 
-	@Test
+ @Test
     void createUserError() throws Exception {
         when(userService.create(any()))
                 .thenThrow(new ResponseStatusException(HttpStatus.CONFLICT));
@@ -101,7 +101,7 @@ class UserControllerTest {
                 .andExpect(status().isConflict());
     }
 
-	@Test
+ @Test
     void updateUser() throws Exception {
         when(userService.edit(anyLong(), any()))
                 .thenReturn(userDto);
@@ -117,8 +117,8 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.email", is(userDto.getEmail())));
     }
 
-				@Test
-				void deleteUser() throws Exception {
-								mvc.perform(delete("/users/{id}", 1L).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-				}
+    @Test
+    void deleteUser() throws Exception {
+        mvc.perform(delete("/users/{id}", 1L).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    }
 }

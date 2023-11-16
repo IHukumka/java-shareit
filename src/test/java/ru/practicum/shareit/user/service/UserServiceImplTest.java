@@ -30,72 +30,72 @@ import ru.practicum.shareit.user.dto.UserDto;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class UserServiceImplTest {
-				@Autowired
-				private UserService userService;
+    @Autowired
+    private UserService userService;
 
-				@BeforeEach
-				void setUp() {
-								userService.create(userDto1);
-								userService.create(userDto2);
-								userService.create(userDto3);
-				}
+    @BeforeEach
+    void setUp() {
+        userService.create(userDto1);
+        userService.create(userDto2);
+        userService.create(userDto3);
+    }
 
-				@Test
-				void getTest() {
-								UserDto userDtoFromSQL = userService.get(1L);
-								assertThat(userDtoFromSQL.getName(), equalTo(userDto1.getName()));
-				}
+    @Test
+    void getTest() {
+        UserDto userDtoFromSQL = userService.get(1L);
+        assertThat(userDtoFromSQL.getName(), equalTo(userDto1.getName()));
+    }
 
-				@Test
-				void getUserByWrongIdTest() {
-								assertThrows(ResponseStatusException.class, () -> userService.get(100L));
-				}
+    @Test
+    void getUserByWrongIdTest() {
+        assertThrows(ResponseStatusException.class, () -> userService.get(100L));
+    }
 
-				@Test
-				void getAllTest() {
-								List<UserDto> users = userService.getAll();
-								assertThat(users.size(), equalTo(3));
-								userService.create(userDtoCreated);
-								assertThat(userService.getAll().size(), equalTo(4));
-				}
+    @Test
+    void getAllTest() {
+        List<UserDto> users = userService.getAll();
+        assertThat(users.size(), equalTo(3));
+        userService.create(userDtoCreated);
+        assertThat(userService.getAll().size(), equalTo(4));
+    }
 
-				@Test
-				void createTest() {
-								userService.create(userDtoCreated);
-								List<UserDto> users = userService.getAll();
-								assertThat(users.get(3).getName(), equalTo(userDtoCreated.getName()));
-								assertThat(users.get(3).getEmail(), equalTo(userDtoCreated.getEmail()));
-				}
+    @Test
+    void createTest() {
+        userService.create(userDtoCreated);
+        List<UserDto> users = userService.getAll();
+        assertThat(users.get(3).getName(), equalTo(userDtoCreated.getName()));
+        assertThat(users.get(3).getEmail(), equalTo(userDtoCreated.getEmail()));
+    }
 
-				@Test
-				void createWithDuplicateEmailTest() {
-								assertThrows(DataIntegrityViolationException.class, () -> userService.create(userDtoWrongCreated));
-				}
+    @Test
+    void createWithDuplicateEmailTest() {
+        assertThrows(DataIntegrityViolationException.class, () -> userService.create(userDtoWrongCreated));
+    }
 
-				@Test
-				void editTest() {
-								userDto2.setName("User2new");
-								userDto2.setEmail("User2new@mail.ru");
-								UserDto userDtoFromSQL = userService.edit(2L, userDto2);
-								assertThat(userDtoFromSQL.getName(), equalTo(userDto2.getName()));
-								assertThat(userDtoFromSQL.getEmail(), equalTo(userDto2.getEmail()));
-								userDto2.setName("user2");
-								userDto2.setEmail("user2@mail.ru");
-				}
+    @Test
+    void editTest() {
+        userDto2.setName("User2new");
+        userDto2.setEmail("User2new@mail.ru");
+        UserDto userDtoFromSQL = userService.edit(2L, userDto2);
+        assertThat(userDtoFromSQL.getName(), equalTo(userDto2.getName()));
+        assertThat(userDtoFromSQL.getEmail(), equalTo(userDto2.getEmail()));
+        userDto2.setName("user2");
+        userDto2.setEmail("user2@mail.ru");
+    }
 
-				@Test
-				void editTestWhenNotFound() {
-								assertThrows(ResponseStatusException.class, () -> userService.edit(20L, userDto2));
-				}
+    @Test
+    void editTestWhenNotFound() {
+        assertThrows(ResponseStatusException.class, () -> userService.edit(20L, userDto2));
+    }
 
-				@Test
-				void deleteUserTest() {
-								userService.delete(1L);
-								assertThat(userService.getAll().size(), equalTo(2));
-				}
+    @Test
+    void deleteUserTest() {
+        userService.delete(1L);
+        assertThat(userService.getAll().size(), equalTo(2));
+    }
 
-				@Test
-				void deleteUserWrongIdTest() {
-								assertThrows(EmptyResultDataAccessException.class, () -> userService.delete(100L));
-				}
+    @Test
+    void deleteUserWrongIdTest() {
+        assertThrows(EmptyResultDataAccessException.class, () -> userService.delete(100L));
+    }
 }

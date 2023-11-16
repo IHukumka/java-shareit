@@ -9,22 +9,20 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 public interface ItemService {
 
-				void clearAll();
+	ItemDto create(Long userId, ItemDto itemDto);
 
-				ItemDto create(Long userId, ItemDto itemDto);
+	CommentDto createComment(long itemId, long userId, CommentDto commentDto, Pageable pageable);
 
-				CommentDto createComment(long itemId, long userId, CommentDto commentDto, Pageable pageable);
+	void delete(Long id);
 
-				void delete(Long id);
+	ItemDto edit(Long id, ItemDto itemDto, Long userId);
 
-				ItemDto edit(Long id, ItemDto itemDto, Long userId);
+	ItemDto get(Long id, Long userId);
 
-				ItemDto get(Long id, Long userId);
+	List<ItemDto> getAll(Long userId, Pageable pageable);
 
-				List<ItemDto> getAll(Long userId, Pageable pageable);
+	List<ItemDto> getRequestItems(long requestId);
 
-				List<ItemDto> getRequestItems(long requestId);
-
-				List<ItemDto> searchForItems(String text, Integer from, Integer size);
+	List<ItemDto> searchForItems(String text, Integer from, Integer size);
 
 }

@@ -8,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 @WebMvcTest(controllers = ValidationException.class)
 public class ValidationExceptionTest {
 
-				@Test
-				void testConstructor() {
-								String message = "409 CONFLICT";
-								assertEquals(message, new ValidationException(message).getMessage());
-				}
+    @Test
+    void testConstructor() {
+        String message = "409 CONFLICT";
+        assertEquals(message, new ValidationException(message).getMessage());
+    }
 
 }

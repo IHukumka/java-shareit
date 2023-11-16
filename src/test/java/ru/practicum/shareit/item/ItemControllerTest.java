@@ -38,21 +38,21 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 @WebMvcTest(controllers = ItemController.class)
 class ItemControllerTest {
-				@Autowired
-				ObjectMapper mapper;
-				@MockBean
-				ItemService itemService;
-				@Autowired
-				private MockMvc mvc;
-				private ItemDto itemDto;
+    @Autowired
+    ObjectMapper mapper;
+    @MockBean
+    ItemService itemService;
+    @Autowired
+    private MockMvc mvc;
+    private ItemDto itemDto;
 
-				@BeforeEach
-				void setUp() {
-								UserDto owner = new UserDto(1L, "John", "john.doe@mail.com");
-								itemDto = new ItemDto(1L, "Item", "description", true, owner, 1L, null, null, null);
-				}
+    @BeforeEach
+    void setUp() {
+        UserDto owner = new UserDto(1L, "John", "john.doe@mail.com");
+        itemDto = new ItemDto(1L, "Item", "description", true, owner, 1L, null, null, null);
+    }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getItemById() throws Exception {
         when(itemService.get(anyLong(), anyLong()))
@@ -68,7 +68,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getItemByIdError() throws Exception {
         when(itemService.get(anyLong(), anyLong()))
@@ -81,7 +81,7 @@ class ItemControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getAllOwnerItems() throws Exception {
         when(itemService.getAll(anyLong(), any()))
@@ -98,7 +98,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$[0].available", is(itemDto.getAvailable())));
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void search() throws Exception {
         when(itemService.searchForItems(anyString(), any(), eq(10)))
@@ -112,7 +112,7 @@ class ItemControllerTest {
                 .andExpect(status().isOk());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void createItem() throws Exception {
         when(itemService.create(anyLong(), any()))
@@ -133,23 +133,23 @@ class ItemControllerTest {
                 .andExpect(jsonPath("$.requestId", is(toIntExact(itemDto.getRequestId()))));
     }
 
-				@Test
-				@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-				void createComment() throws Exception {
-								CommentDto commentDto = CommentDto.builder().id(1L).text("text").authorName("name")
-																.created(LocalDateTime.now().withNano(0)).build();
-								when(itemService.createComment(anyLong(), anyLong(), any(), any())).thenReturn(commentDto);
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void createComment() throws Exception {
+        CommentDto commentDto = CommentDto.builder().id(1L).text("text").authorName("name")
+                .created(LocalDateTime.now().withNano(0)).build();
+        when(itemService.createComment(anyLong(), anyLong(), any(), any())).thenReturn(commentDto);
 
-								mvc.perform(post("/items/{itemId}/comment", 1L).header("X-Sharer-User-Id", 1L)
-																.content(mapper.writeValueAsString(commentDto)).characterEncoding(StandardCharsets.UTF_8)
-																.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-																.andExpect(jsonPath("$.id", is((int) commentDto.getId())))
-																.andExpect(jsonPath("$.text", is(commentDto.getText())))
-																.andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
-																.andExpect(jsonPath("$.created", is(commentDto.getCreated().withNano(0).toString())));
-				}
+        mvc.perform(post("/items/{itemId}/comment", 1L).header("X-Sharer-User-Id", 1L)
+                .content(mapper.writeValueAsString(commentDto)).characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is((int) commentDto.getId())))
+                .andExpect(jsonPath("$.text", is(commentDto.getText())))
+                .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
+                .andExpect(jsonPath("$.created", is(commentDto.getCreated().withNano(0).toString())));
+    }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void createCommentError() throws Exception {
         when(itemService.createComment(anyLong(), anyLong(), any(), any()))
@@ -165,7 +165,7 @@ class ItemControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void updateItem() throws Exception {
         when(itemService.edit(anyLong(), eq(itemDto), any()))

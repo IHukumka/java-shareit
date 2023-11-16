@@ -8,10 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 @WebMvcTest(controllers = NotFoundException.class)
 public class NotFoundExceptionTest {
 
-				@Test
-				void testConstructor() {
-								String message = "404 NOT FOUND";
-								assertEquals(message, new NotFoundException(message).getMessage());
-				}
+    @Test
+    void testConstructor() {
+        String message = "404 NOT FOUND";
+        assertEquals(message, new NotFoundException(message).getMessage());
+    }
 
 }

@@ -12,22 +12,22 @@ import org.springframework.web.server.ResponseStatusException;
 @WebMvcTest(controllers = ExceptionRestControllerAdvice.class)
 public class ExceptionsRestControllerAdviceTest {
 
-				public ExceptionRestControllerAdvice controller = new ExceptionRestControllerAdvice();
+    public ExceptionRestControllerAdvice controller = new ExceptionRestControllerAdvice();
 
-				@Test
-				void handleNotFoundExceptionTest() throws IOException {
-								assertEquals("404 NOT_FOUND",
-																controller.handleNotFoundException(new ResponseStatusException(HttpStatus.NOT_FOUND)));
-				}
+    @Test
+    void handleNotFoundExceptionTest() throws IOException {
+        assertEquals("404 NOT_FOUND",
+                controller.handleNotFoundException(new ResponseStatusException(HttpStatus.NOT_FOUND)));
+    }
 
-				@Test
-				void handlerBadValidationTest() throws IOException {
-								assertEquals("409 CONFLICT", controller.handlerBadValidation(new ResponseStatusException(HttpStatus.CONFLICT)));
-				}
+    @Test
+    void handlerBadValidationTest() throws IOException {
+        assertEquals("409 CONFLICT", controller.handlerBadValidation(new ResponseStatusException(HttpStatus.CONFLICT)));
+    }
 
-				@Test
-				void handleInvalidParameterException() {
-								assertEquals(HttpStatus.BAD_REQUEST,
-																controller.handleInvalidParameterException(new IllegalArgumentException()).getStatusCode());
-				}
+    @Test
+    void handleInvalidParameterException() {
+        assertEquals(HttpStatus.BAD_REQUEST,
+                controller.handleInvalidParameterException(new IllegalArgumentException()).getStatusCode());
+    }
 }

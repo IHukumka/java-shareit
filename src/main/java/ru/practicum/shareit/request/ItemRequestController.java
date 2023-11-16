@@ -26,33 +26,33 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 @RequestMapping(path = "/requests")
 @AllArgsConstructor
 public class ItemRequestController {
-				private final ItemRequestService service;
-				private static final String HEADER_USER_ID = "X-Sharer-User-Id";
+    private final ItemRequestService service;
+    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
 
-				@GetMapping
-				public ResponseEntity<List<ItemRequestDto>> getAllRequests(@RequestHeader(HEADER_USER_ID) Long userId) {
-								return ResponseEntity.ok(service.getAllRequests(userId));
-				}
+    @GetMapping
+    public ResponseEntity<List<ItemRequestDto>> getAllRequests(@RequestHeader(HEADER_USER_ID) Long userId) {
+        return ResponseEntity.ok(service.getAllRequests(userId));
+    }
 
-				@GetMapping("/{requestId}")
-				public ResponseEntity<ItemRequestDto> getRequest(@RequestHeader(HEADER_USER_ID) Long userId,
-												@PathVariable Long requestId) {
-								return ResponseEntity.ok(service.getRequest(userId, requestId));
-				}
+    @GetMapping("/{requestId}")
+    public ResponseEntity<ItemRequestDto> getRequest(@RequestHeader(HEADER_USER_ID) Long userId,
+            @PathVariable Long requestId) {
+        return ResponseEntity.ok(service.getRequest(userId, requestId));
+    }
 
-				@GetMapping("/all")
-				public ResponseEntity<List<ItemRequestDto>> getAllUsersRequests(@RequestHeader(HEADER_USER_ID) Long userId,
-												@RequestParam(required = false, defaultValue = "0") Integer from,
-												@RequestParam(required = false, defaultValue = "10") Integer size) {
-								if (from.longValue() < 0) {
-												throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-								}
-								return ResponseEntity.ok(service.getAllUsersRequests(userId, PageRequest.of((from / size), size)));
-				}
+    @GetMapping("/all")
+    public ResponseEntity<List<ItemRequestDto>> getAllUsersRequests(@RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        if (from.longValue() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(service.getAllUsersRequests(userId, PageRequest.of((from / size), size)));
+    }
 
-				@PostMapping
-				public ResponseEntity<ItemRequestDto> createRequest(@RequestHeader(HEADER_USER_ID) Long userId,
-												@RequestBody @Valid ItemRequestDto itemRequestDto) {
-								return ResponseEntity.ok(service.createRequest(userId, itemRequestDto));
-				}
+    @PostMapping
+    public ResponseEntity<ItemRequestDto> createRequest(@RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestBody @Valid ItemRequestDto itemRequestDto) {
+        return ResponseEntity.ok(service.createRequest(userId, itemRequestDto));
+    }
 }

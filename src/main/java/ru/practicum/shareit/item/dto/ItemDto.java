@@ -18,27 +18,27 @@ import ru.practicum.shareit.user.dto.UserDto;
 @AllArgsConstructor
 public class ItemDto {
 
-				private long id;
+    private long id;
 
-				@NotNull
-				@NotBlank
-				@Size(max = 255)
-				private String name;
+    @NotNull
+    @NotBlank
+    @Size(max = 255)
+    private String name;
 
-				@NotNull
-				@Size(max = 512)
-				private String description;
+    @NotNull
+    @Size(max = 512)
+    private String description;
 
-				@NotNull
-				private Boolean available;
+    @NotNull
+    private Boolean available;
 
-				private UserDto user;
+    private UserDto user;
 
-				private Long requestId;
+    private Long requestId;
 
-				private BookingDtoL lastBooking;
+    private BookingDtoL lastBooking;
 
-				private BookingDtoL nextBooking;
+    private BookingDtoL nextBooking;
 
-				private List<CommentDto> comments;
+    private List<CommentDto> comments;
 }

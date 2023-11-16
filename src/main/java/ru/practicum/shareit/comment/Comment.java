@@ -28,21 +28,21 @@ import ru.practicum.shareit.user.User;
 @Table(name = "comments")
 public class Comment {
 
-				@Id
-				@GeneratedValue(strategy = GenerationType.IDENTITY)
-				private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-				@Column(name = "text")
-				private String text;
+    @Column(name = "text")
+    private String text;
 
-				@ManyToOne
-				@JoinColumn(name = "item_id", referencedColumnName = "id")
-				private Item item;
+    @ManyToOne
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
+    private Item item;
 
-				@ManyToOne
-				@JoinColumn(name = "author_id", referencedColumnName = "id")
-				private User author;
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
+    private User author;
 
-				@Column(name = "created")
-				private LocalDateTime created;
+    @Column(name = "created")
+    private LocalDateTime created;
 }

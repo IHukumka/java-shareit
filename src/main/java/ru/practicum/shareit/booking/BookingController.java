@@ -27,58 +27,58 @@ import ru.practicum.shareit.booking.dto.BookingDtoL;
 @RequiredArgsConstructor
 public class BookingController {
 
-				private static final String HEADER_USER_ID = "X-Sharer-User-Id";
-				private static final String HEADER_ITEM_ID = "X-Sharer-Item-Id";
-				private final BookingService service;
+    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
+    private static final String HEADER_ITEM_ID = "X-Sharer-Item-Id";
+    private final BookingService service;
 
-				@PostMapping
-				public ResponseEntity<BookingDto> createBooking(@RequestHeader(HEADER_USER_ID) Long userId,
-												@RequestBody @Valid BookingDtoL bookingDto) {
-								return ResponseEntity.ok(service.add(userId, bookingDto));
-				}
+    @PostMapping
+    public ResponseEntity<BookingDto> createBooking(@RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestBody @Valid BookingDtoL bookingDto) {
+        return ResponseEntity.ok(service.add(userId, bookingDto));
+    }
 
-				@GetMapping(value = "/{bookingId}")
-				public ResponseEntity<BookingDto> getBookingById(@RequestHeader(HEADER_USER_ID) Long userId,
-												@PathVariable Long bookingId) {
-								return ResponseEntity.ok(service.get(userId, bookingId));
-				}
+    @GetMapping(value = "/{bookingId}")
+    public ResponseEntity<BookingDto> getBookingById(@RequestHeader(HEADER_USER_ID) Long userId,
+            @PathVariable Long bookingId) {
+        return ResponseEntity.ok(service.get(userId, bookingId));
+    }
 
-				@GetMapping("/item")
-				public ResponseEntity<List<BookingDto>> getItemBookings(@RequestHeader(HEADER_ITEM_ID) Long itemId,
-												@RequestParam(required = false, defaultValue = "ALL") String state,
-												@RequestParam(required = false, defaultValue = "0") Integer from,
-												@RequestParam(required = false, defaultValue = "10") Integer size) {
-								if (from.longValue() < 0) {
-												throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-								}
-								return ResponseEntity.ok(service.getBookingsByItem(itemId, PageRequest.of((from / size), size)));
-				}
+    @GetMapping("/item")
+    public ResponseEntity<List<BookingDto>> getItemBookings(@RequestHeader(HEADER_ITEM_ID) Long itemId,
+            @RequestParam(required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        if (from.longValue() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(service.getBookingsByItem(itemId, PageRequest.of((from / size), size)));
+    }
 
-				@GetMapping("/owner")
-				public ResponseEntity<List<BookingDto>> getOwnerBookings(@RequestHeader(HEADER_USER_ID) Long userId,
-												@RequestParam(required = false, defaultValue = "ALL") String state,
-												@RequestParam(required = false, defaultValue = "0") Integer from,
-												@RequestParam(required = false, defaultValue = "10") Integer size) {
-								if (from.longValue() < 0) {
-												throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-								}
-								return ResponseEntity.ok(service.getBookingsByOwner(userId, state, PageRequest.of((from / size), size)));
-				}
+    @GetMapping("/owner")
+    public ResponseEntity<List<BookingDto>> getOwnerBookings(@RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestParam(required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        if (from.longValue() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(service.getBookingsByOwner(userId, state, PageRequest.of((from / size), size)));
+    }
 
-				@GetMapping
-				public ResponseEntity<List<BookingDto>> getUserBookings(@RequestHeader(HEADER_USER_ID) Long userId,
-												@RequestParam(required = false, defaultValue = "ALL") String state,
-												@RequestParam(required = false, defaultValue = "0") Integer from,
-												@RequestParam(required = false, defaultValue = "10") Integer size) {
-								if (from.longValue() < 0) {
-												throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-								}
-								return ResponseEntity.ok(service.getBookingsByBooker(userId, state, PageRequest.of((from / size), size)));
-				}
+    @GetMapping
+    public ResponseEntity<List<BookingDto>> getUserBookings(@RequestHeader(HEADER_USER_ID) Long userId,
+            @RequestParam(required = false, defaultValue = "ALL") String state,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        if (from.longValue() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(service.getBookingsByBooker(userId, state, PageRequest.of((from / size), size)));
+    }
 
-				@PatchMapping(value = "/{bookingId}")
-				public ResponseEntity<BookingDto> updateBooking(@PathVariable Long bookingId, @RequestParam Boolean approved,
-												@RequestHeader(HEADER_USER_ID) Long userId) {
-								return ResponseEntity.ok(service.update(bookingId, userId, approved));
-				}
+    @PatchMapping(value = "/{bookingId}")
+    public ResponseEntity<BookingDto> updateBooking(@PathVariable Long bookingId, @RequestParam Boolean approved,
+            @RequestHeader(HEADER_USER_ID) Long userId) {
+        return ResponseEntity.ok(service.update(bookingId, userId, approved));
+    }
 }

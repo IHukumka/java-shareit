@@ -19,13 +19,13 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CommentDto {
 
-				private long id;
+    private long id;
 
-				@NotEmpty
-				private String text;
+    @NotEmpty
+    private String text;
 
-				private String authorName;
+    private String authorName;
 
-				@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-				private LocalDateTime created;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime created;
 }

@@ -42,100 +42,114 @@ import ru.practicum.shareit.user.dto.UserDto;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class ItemServiceImplTest {
-				@Autowired
-				private final ItemService itemService;
-				@Autowired
-				private final UserService userService;
-				@Autowired
-				private final BookingStorage bookingStorage;
-				@Autowired
-				private final ItemRequestService itemRequestService;
-				UserDto bookerDto;
-				ItemDto itemDto;
+	@Autowired
+	private final ItemService itemService;
+	@Autowired
+	private final UserService userService;
+	@Autowired
+	private final BookingStorage bookingStorage;
+	@Autowired
+	private final ItemRequestService itemRequestService;
+	UserDto bookerDto;
+	ItemDto itemDto;
 
-				@BeforeEach
-				void setUp() {
-								userService.create(userDto1);
-								bookerDto = userService.create(userDto2);
-								itemDto = itemService.create(1L, itemDto1);
-				}
+	@BeforeEach
+	void setUp() {
+		userService.create(userDto1);
+		bookerDto = userService.create(userDto2);
+		itemDto = itemService.create(1L, itemDto1);
+	}
 
-				@Test
-				void getTest() {
-								Item itemFromSQL = ItemMapper.toItem(itemService.get(1L, 1L));
-								assertThat(itemFromSQL.getName(), equalTo(itemDto1.getName()));
-				}
+	@Test
+	void getTest() {
+		Item itemFromSQL = ItemMapper.toItem(itemService.get(1L, 1L));
+		assertThat(itemFromSQL.getName(), equalTo(itemDto1.getName()));
+	}
 
-				@Test
-				void getItemByWrongIdTest() {
-								assertThrows(ResponseStatusException.class, () -> itemService.get(100L, 1L));
-				}
+	@Test
+	void getItemByWrongIdTest() {
+		assertThrows(ResponseStatusException.class, () -> itemService.get(100L, 1L));
+	}
 
-				@Test
-				void getAllTest() {
-								List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
-								assertThat(items.size(), equalTo(1));
-				}
+	@Test
+	void getAllTest() {
+		List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
+		assertThat(items.size(), equalTo(1));
+	}
 
-				@Test
-				void searchTest() {
-								List<ItemDto> items = itemService.searchForItems("description1", 0, 10);
-								assertThat(items.size(), equalTo(1));
-								items = itemService.searchForItems("description2", 0, 10);
-								assertThat(items.size(), equalTo(0));
-				}
+	@Test
+	void searchTest() {
+		List<ItemDto> items = itemService.searchForItems("description1", 0, 10);
+		assertThat(items.size(), equalTo(1));
+		items = itemService.searchForItems("description2", 0, 10);
+		assertThat(items.size(), equalTo(0));
+	}
 
-				@Test
-				void createTest() {
-								itemService.create(1L, itemDtoCreated);
-								List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
-								assertThat(items.get(1).getName().toString(), equalTo(itemDtoCreated.getName().toString()));
-				}
+	@Test
+	void createTest() {
+		itemService.create(1L, itemDtoCreated);
+		List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
+		assertThat(items.get(1).getName().toString(), equalTo(itemDtoCreated.getName().toString()));
+	}
 
-				@Test
-				void editTest() {
-								itemDto1.setName("item1update");
-								itemService.edit(1L, itemDto1, 1L);
-								List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
-								assertThat(items.get(0).getName(), equalTo("item1update"));
-				}
+	@Test
+	void createFailTest() {
+		itemDto.setRequestId(100L);
+		assertThat(null, equalTo(itemService.create(1L, itemDtoCreated).getRequestId()));
+		List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
+		assertThat(items.get(1).getName().toString(), equalTo(itemDtoCreated.getName().toString()));
+	}
 
-				@Test
-				void editWrongUserIdTest() {
-								assertThrows(ResponseStatusException.class, () -> itemService.edit(1L, itemDto1, 2L));
-				}
+	@Test
+	void editTest() {
+		itemDto1.setName("item1update");
+		itemService.edit(1L, itemDto1, 1L);
+		List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
+		assertThat(items.get(0).getName(), equalTo("item1update"));
+	}
 
-				@Test
-				void createCommentTest() {
-								Booking booking = Booking.builder().start(LocalDateTime.of(2022, 8, 1, 12, 15, 1))
-																.end(LocalDateTime.of(2022, 8, 2, 12, 15, 1)).item(ItemMapper.toItem(itemDto))
-																.booker(UserMapper.toUser(bookerDto)).status(BookingStatus.APPROVED).build();
-								bookingStorage.save(booking);
-								itemService.createComment(1L, 2L, commentDto, Pageable.ofSize(10));
-								List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
-								assertThat(items.get(0).getComments().get(0).getText(), equalTo(commentDto.getText()));
-				}
+	@Test
+	void editWrongUserIdTest() {
+		assertThrows(ResponseStatusException.class, () -> itemService.edit(1L, itemDto1, 2L));
+	}
 
-				@Test
-				void createCommentFailTest() {
-								assertThrows(IllegalArgumentException.class,
-																() -> itemService.createComment(1L, 1L, commentDto, Pageable.ofSize(10)));
-				}
+	@Test
+	void deleteTest() {
+		itemService.delete(itemDto.getId());
+		assertThrows(ResponseStatusException.class, () -> itemService.get(itemDto.getId(), 1L));
+	}
 
-				@Test
-				void getRequestItemsTest() {
-								ItemRequestDto itemRequest1 = ItemRequestDto.builder().description("itemRequest1").build();
-								itemRequestService.createRequest(2L, itemRequest1);
-								itemService.create(1L, itemDto2);
-								List<ItemDto> items = itemService.getRequestItems(1L);
-								assertThat(items.size(), equalTo(1));
-				}
+	@Test
+	void createCommentTest() {
+		Booking booking = Booking.builder().start(LocalDateTime.of(2022, 8, 1, 12, 15, 1))
+				.end(LocalDateTime.of(2022, 8, 2, 12, 15, 1)).item(ItemMapper.toItem(itemDto))
+				.booker(UserMapper.toUser(bookerDto)).status(BookingStatus.APPROVED).build();
+		bookingStorage.save(booking);
+		itemService.createComment(1L, 2L, commentDto, Pageable.ofSize(10));
+		List<ItemDto> items = itemService.getAll(1L, PageRequest.of(0, 10));
+		assertThat(items.get(0).getComments().get(0).getText(), equalTo(commentDto.getText()));
+	}
 
-				@Test
-				void getItemWithBookingsById() {
-								ItemDto item = itemService.get(1L, 1L);
-								assertThat(item.getNextBooking(), equalTo(null));
-								assertThat(item.getLastBooking(), equalTo(null));
-								assertThat(item.getName(), equalTo(itemDto1.getName()));
-				}
+	@Test
+	void createCommentFailTest() {
+		assertThrows(IllegalArgumentException.class,
+				() -> itemService.createComment(1L, 1L, commentDto, Pageable.ofSize(10)));
+	}
+
+	@Test
+	void getRequestItemsTest() {
+		ItemRequestDto itemRequest1 = ItemRequestDto.builder().description("itemRequest1").build();
+		itemRequestService.createRequest(2L, itemRequest1);
+		itemService.create(1L, itemDto2);
+		List<ItemDto> items = itemService.getRequestItems(1L);
+		assertThat(items.size(), equalTo(1));
+	}
+
+	@Test
+	void getItemWithBookingsById() {
+		ItemDto item = itemService.get(1L, 1L);
+		assertThat(item.getNextBooking(), equalTo(null));
+		assertThat(item.getLastBooking(), equalTo(null));
+		assertThat(item.getName(), equalTo(itemDto1.getName()));
+	}
 }

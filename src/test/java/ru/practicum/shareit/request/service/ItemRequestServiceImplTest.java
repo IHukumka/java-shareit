@@ -27,59 +27,65 @@ import ru.practicum.shareit.user.UserService;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ItemRequestServiceImplTest {
-				@Autowired
-				private final ItemRequestService itemRequestService;
-				@Autowired
-				private UserService userService;
+	@Autowired
+	private final ItemRequestService itemRequestService;
+	@Autowired
+	private UserService userService;
 
-				private ItemRequestDto itemRequest1;
-				private ItemRequestDto itemRequest2;
-				long userId;
+	private ItemRequestDto itemRequest1;
+	private ItemRequestDto itemRequest2;
+	long userId;
 
-				@BeforeEach
-				void setUp() {
-								itemRequest1 = ItemRequestDto.builder().description("itemRequest1").build();
-								itemRequest2 = ItemRequestDto.builder().description("itemRequest2").build();
-								userId = userService.create(userDto1).getId();
-								itemRequestService.createRequest(1L, itemRequest1);
-				}
+	@BeforeEach
+	void setUp() {
+		itemRequest1 = ItemRequestDto.builder().description("itemRequest1").build();
+		itemRequest2 = ItemRequestDto.builder().description("itemRequest2").build();
+		userId = userService.create(userDto1).getId();
+		itemRequestService.createRequest(1L, itemRequest1);
+	}
 
-				@Test
-				void getAllRequestsTest() {
-								List<ItemRequestDto> itemRequestDtoFromSQL = itemRequestService.getAllRequests(userId);
-								assertThat(itemRequestDtoFromSQL.size(), equalTo(1));
-				}
+	@Test
+	void getAllRequestsTest() {
+		List<ItemRequestDto> itemRequestDtoFromSQL = itemRequestService.getAllRequests(userId);
+		assertThat(itemRequestDtoFromSQL.size(), equalTo(1));
+	}
 
-				@Test
-				void getAllRequestsWrongIdTest() {
-								assertThrows(ResponseStatusException.class, () -> itemRequestService.getAllRequests(10L));
-				}
+	@Test
+	void getAllRequestsWrongIdTest() {
+		assertThrows(ResponseStatusException.class, () -> itemRequestService.getAllRequests(10L));
+	}
 
-				@Test
-				void getRequestTest() {
-								long id = itemRequestService.createRequest(userId, itemRequest2).getId();
-								assertThat(itemRequestService.getRequest(userId, id).getDescription(), equalTo(itemRequest2.getDescription()));
-				}
+	@Test
+	void getRequestTest() {
+		long id = itemRequestService.createRequest(userId, itemRequest2).getId();
+		assertThat(itemRequestService.getRequest(userId, id).getDescription(), equalTo(itemRequest2.getDescription()));
+	}
 
-				@Test
-				void getRequestWrongIdTest() {
-								assertThrows(ResponseStatusException.class, () -> itemRequestService.getRequest(userId, 2L));
-				}
+	@Test
+	void getRequestWrongIdTest() {
+		assertThrows(ResponseStatusException.class, () -> itemRequestService.getRequest(userId, 2L));
+	}
 
-				@Test
-				void getAllUsersRequests() {
-								long user2Id = userService.create(userDto2).getId();
-								itemRequestService.createRequest(user2Id, itemRequest2);
-								List<ItemRequestDto> itemRequestDtoFromSQL = itemRequestService.getAllUsersRequests(user2Id,
-																PageRequest.of(0, 10));
-								assertThat(itemRequestDtoFromSQL.size(), equalTo(1));
-				}
+	@Test
+	void getRequestWrongUserIdTest() {
+		long id = itemRequestService.createRequest(userId, itemRequest2).getId();
+		assertThrows(ResponseStatusException.class, () -> itemRequestService.getRequest(100L, id));
+	}
 
-				@Test
-				void createRequest() {
-								itemRequestService.createRequest(userId, itemRequest2);
-								List<ItemRequestDto> itemRequestDtoFromSQL = itemRequestService.getAllRequests(userId);
-								assertThat(itemRequestDtoFromSQL.get(1).getDescription(), equalTo(itemRequest2.getDescription()));
-								assertThat(itemRequestDtoFromSQL.get(1).getItems().size(), equalTo(0));
-				}
+	@Test
+	void getAllUsersRequests() {
+		long user2Id = userService.create(userDto2).getId();
+		itemRequestService.createRequest(user2Id, itemRequest2);
+		List<ItemRequestDto> itemRequestDtoFromSQL = itemRequestService.getAllUsersRequests(user2Id,
+				PageRequest.of(0, 10));
+		assertThat(itemRequestDtoFromSQL.size(), equalTo(1));
+	}
+
+	@Test
+	void createRequest() {
+		itemRequestService.createRequest(userId, itemRequest2);
+		List<ItemRequestDto> itemRequestDtoFromSQL = itemRequestService.getAllRequests(userId);
+		assertThat(itemRequestDtoFromSQL.get(1).getDescription(), equalTo(itemRequest2.getDescription()));
+		assertThat(itemRequestDtoFromSQL.get(1).getItems().size(), equalTo(0));
+	}
 }

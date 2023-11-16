@@ -31,23 +31,23 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 @WebMvcTest(controllers = ItemRequestController.class)
 class ItemRequestControllerTest {
-				@Autowired
-				ObjectMapper mapper;
-				@MockBean
-				ItemRequestService itemRequestService;
-				@Autowired
-				private MockMvc mvc;
-				private ItemRequestDto itemRequestDto;
+    @Autowired
+    ObjectMapper mapper;
+    @MockBean
+    ItemRequestService itemRequestService;
+    @Autowired
+    private MockMvc mvc;
+    private ItemRequestDto itemRequestDto;
 
-				@BeforeEach
-				void setUp() {
-								UserDto userDto = new UserDto(1L, "John", "john.doe@mail.com");
-								itemRequestDto = new ItemRequestDto(1L, "description", userDto, LocalDateTime.now().withNano(0),
-																new ArrayList<>());
-								itemRequestService.createRequest(1L, itemRequestDto);
-				}
+    @BeforeEach
+    void setUp() {
+        UserDto userDto = new UserDto(1L, "John", "john.doe@mail.com");
+        itemRequestDto = new ItemRequestDto(1L, "description", userDto, LocalDateTime.now().withNano(0),
+                new ArrayList<>());
+        itemRequestService.createRequest(1L, itemRequestDto);
+    }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getAllRequests() throws Exception {
         when(itemRequestService.getAllRequests(anyLong()))
@@ -64,7 +64,7 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].items", is(itemRequestDto.getItems())));
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getRequest() throws Exception {
         when(itemRequestService.getRequest(anyLong(), anyLong()))
@@ -80,7 +80,7 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$.items", is(itemRequestDto.getItems())));
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getAllUsersRequests() throws Exception {
         when(itemRequestService.getAllUsersRequests(anyLong(), any()))
@@ -97,16 +97,16 @@ class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].items", is(itemRequestDto.getItems())));
     }
 
-				@Test
-				@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-				void createRequest() throws Exception {
-								itemRequestDto = ItemRequestDto.builder().id(1L).description("description").build();
-								when(itemRequestService.createRequest(anyLong(), any())).thenReturn(itemRequestDto);
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void createRequest() throws Exception {
+        itemRequestDto = ItemRequestDto.builder().id(1L).description("description").build();
+        when(itemRequestService.createRequest(anyLong(), any())).thenReturn(itemRequestDto);
 
-								mvc.perform(post("/requests").header("X-Sharer-User-Id", 1L).content(mapper.writeValueAsString(itemRequestDto))
-																.characterEncoding(StandardCharsets.UTF_8).contentType(MediaType.APPLICATION_JSON)
-																.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-																.andExpect(jsonPath("$.id", is((int) itemRequestDto.getId())))
-																.andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
-				}
+        mvc.perform(post("/requests").header("X-Sharer-User-Id", 1L).content(mapper.writeValueAsString(itemRequestDto))
+                .characterEncoding(StandardCharsets.UTF_8).contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is((int) itemRequestDto.getId())))
+                .andExpect(jsonPath("$.description", is(itemRequestDto.getDescription())));
+    }
 }

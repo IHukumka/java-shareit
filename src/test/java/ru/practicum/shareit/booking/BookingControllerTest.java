@@ -40,49 +40,49 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
-				@Autowired
-				ObjectMapper mapper;
-				@MockBean
-				BookingService bookingService;
-				@Autowired
-				private MockMvc mvc;
-				private BookingDto bookingDto;
-				private BookingDtoL bookingDtoL;
+    @Autowired
+    ObjectMapper mapper;
+    @MockBean
+    BookingService bookingService;
+    @Autowired
+    private MockMvc mvc;
+    private BookingDto bookingDto;
+    private BookingDtoL bookingDtoL;
 
-				@BeforeEach
-				void setUp() {
-								UserDto booker = new UserDto(1L, "John", "john.doe@mail.com");
-								UserDto owner = new UserDto(2L, "John2", "john2.doe@mail.com");
-								ItemDto item = new ItemDto(1L, "Item", "description", true, owner, 2L, bookingDtoL, bookingDtoL, null);
-								bookingDto = BookingDto.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
-																.end(LocalDateTime.of(2023, 12, 30, 1, 1, 1)).item(item).booker(booker).status(BookingStatus.WAITING)
-																.build();
-								bookingDtoL = BookingDtoL.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
-																.end(LocalDateTime.of(2023, 12, 30, 1, 1, 1)).itemId(1L).status(BookingStatus.WAITING).build();
-				}
+    @BeforeEach
+    void setUp() {
+        UserDto booker = new UserDto(1L, "John", "john.doe@mail.com");
+        UserDto owner = new UserDto(2L, "John2", "john2.doe@mail.com");
+        ItemDto item = new ItemDto(1L, "Item", "description", true, owner, 2L, bookingDtoL, bookingDtoL, null);
+        bookingDto = BookingDto.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
+                .end(LocalDateTime.of(2023, 12, 30, 1, 1, 1)).item(item).booker(booker).status(BookingStatus.WAITING)
+                .build();
+        bookingDtoL = BookingDtoL.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
+                .end(LocalDateTime.of(2023, 12, 30, 1, 1, 1)).itemId(1L).status(BookingStatus.WAITING).build();
+    }
 
-				@Test
-				@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-				void createBooking() throws Exception {
-								when(bookingService.add(anyLong(), eq(bookingDtoL)))
-								.thenReturn(bookingDto);
+    @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    void createBooking() throws Exception {
+        when(bookingService.add(anyLong(), eq(bookingDtoL)))
+        .thenReturn(bookingDto);
 
-								mvc.perform(post("/bookings")
-																.header("X-Sharer-User-Id", 2L)
-																.content(mapper.writeValueAsString(bookingDtoL))
-																.characterEncoding(StandardCharsets.UTF_8)
-																.contentType(MediaType.APPLICATION_JSON)
-																.accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-								.andExpect(jsonPath("$.id", is(bookingDto.getId().intValue())))
-								.andExpect(jsonPath("$.start", is(bookingDto.getStart().toString())))
-								.andExpect(jsonPath("$.end", is(bookingDto.getEnd().toString())))
-								.andExpect(jsonPath("$.item.name", is(bookingDto.getItem().getName())))
-								.andExpect(jsonPath("$.booker.name", is(bookingDto.getBooker().getName())))
-								.andExpect(jsonPath("$.status", is(bookingDto.getStatus().toString())));
-								verify(bookingService).add(anyLong(), any());
-				}
+        mvc.perform(post("/bookings")
+                .header("X-Sharer-User-Id", 2L)
+                .content(mapper.writeValueAsString(bookingDtoL))
+                .characterEncoding(StandardCharsets.UTF_8)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(bookingDto.getId().intValue())))
+        .andExpect(jsonPath("$.start", is(bookingDto.getStart().toString())))
+        .andExpect(jsonPath("$.end", is(bookingDto.getEnd().toString())))
+        .andExpect(jsonPath("$.item.name", is(bookingDto.getItem().getName())))
+        .andExpect(jsonPath("$.booker.name", is(bookingDto.getBooker().getName())))
+        .andExpect(jsonPath("$.status", is(bookingDto.getStatus().toString())));
+        verify(bookingService).add(anyLong(), any());
+    }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void updateBooking() throws Exception {
         when(bookingService.update(anyLong(), anyLong(), anyBoolean()))
@@ -102,7 +102,7 @@ class BookingControllerTest {
         verify(bookingService).update(anyLong(), anyLong(), anyBoolean());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getBookingById() throws Exception {
         when(bookingService.get(anyLong(), anyLong()))
@@ -121,7 +121,7 @@ class BookingControllerTest {
         verify(bookingService).get(anyLong(), anyLong());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getUserBookings() throws Exception {
         when(bookingService.getBookingsByBooker(anyLong(), anyString(), any()))
@@ -142,7 +142,7 @@ class BookingControllerTest {
         verify(bookingService).getBookingsByBooker(anyLong(), anyString(), any());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getItemBookings() throws Exception {
         when(bookingService.getBookingsByItem(anyLong(), any()))
@@ -163,7 +163,7 @@ class BookingControllerTest {
         verify(bookingService).getBookingsByItem(anyLong(), any());
     }
 
-				@Test
+    @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void getOwnerBookings() throws Exception {
         when(bookingService.getBookingsByOwner(anyLong(), anyString(), any()))
@@ -184,7 +184,7 @@ class BookingControllerTest {
         verify(bookingService).getBookingsByOwner(anyLong(), anyString(), any());
     }
 
-				@Test
+    @Test
     void getOwnerBookingsError() throws Exception {
         when(bookingService.getBookingsByOwner(anyLong(), eq("ALL"), any()))
                 .thenThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST));
@@ -197,16 +197,16 @@ class BookingControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-				@Test
-				void bookingControllerErrorsTest() throws Exception {
-								mvc.perform(get("/bookings/owner?from=-1&size=2").header("X-Sharer-User-Id", 1L).param("state", "ALL")
-																.accept(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError())
-																.andExpect(status().isBadRequest());
-								mvc.perform(get("/bookings/item?from=-1&size=2").header("X-Sharer-User-Id", 1L).param("state", "ALL")
-																.accept(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError())
-																.andExpect(status().isBadRequest());
-								mvc.perform(get("/bookings?from=-1&size=2").header("X-Sharer-User-Id", 1L).param("state", "ALL")
-																.accept(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError())
-																.andExpect(status().isBadRequest());
-				}
+    @Test
+    void bookingControllerErrorsTest() throws Exception {
+        mvc.perform(get("/bookings/owner?from=-1&size=2").header("X-Sharer-User-Id", 1L).param("state", "ALL")
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError())
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/bookings/item?from=-1&size=2").header("X-Sharer-User-Id", 1L).param("state", "ALL")
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError())
+                .andExpect(status().isBadRequest());
+        mvc.perform(get("/bookings?from=-1&size=2").header("X-Sharer-User-Id", 1L).param("state", "ALL")
+                .accept(MediaType.APPLICATION_JSON)).andExpect(status().is4xxClientError())
+                .andExpect(status().isBadRequest());
+    }
 }
