@@ -11,7 +11,7 @@ import ru.practicum.shareit.user.User;
 
 @Repository
 public interface ItemRequestStorage extends PagingAndSortingRepository<ItemRequest, Long> {
-	List<ItemRequest> findByUser_Id(long userId);
+    List<ItemRequest> findByUser_Id(long userId);
 
-	Page<ItemRequest> findByUserIsNot(User user, Pageable pageable);
+    Page<ItemRequest> findByUserIsNot(User user, Pageable pageable);
 }

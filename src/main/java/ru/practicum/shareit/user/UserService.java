@@ -6,18 +6,18 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 public interface UserService {
 
-	List<UserDto> getAll();
+    List<UserDto> getAll();
 
-	UserDto get(Long id);
+    UserDto get(Long id);
 
-	UserDto edit(Long id, UserDto user);
+    UserDto edit(Long id, UserDto user);
 
-	void clearAll();
+    void clearAll();
 
-	void delete(Long id);
+    void delete(Long id);
 
-	UserDto create(UserDto userDto);
+    UserDto create(UserDto userDto);
 
-	void checkUser(Long id);
+    void checkUser(Long id);
 
 }

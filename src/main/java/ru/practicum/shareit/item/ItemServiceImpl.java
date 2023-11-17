@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Booking.BookingStatus;
 import ru.practicum.shareit.booking.BookingMapper;
@@ -30,6 +32,7 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
@@ -48,12 +51,6 @@ public class ItemServiceImpl implements ItemService {
 	}
 
 	@Override
-	public void clearAll() {
-		this.storage.deleteAll();
-
-	}
-
-	@Override
 	public ItemDto create(Long userId, ItemDto itemDto) {
 		userService.checkUser(userId);
 		itemDto.setUser(userService.get(userId));
@@ -63,7 +60,11 @@ public class ItemServiceImpl implements ItemService {
 		}
 		ItemRequest itemRequest = null;
 		if (itemDto.getRequestId() != null) {
-			itemRequest = itemRequestStorage.findById(itemDto.getRequestId()).get();
+			try {
+				itemRequest = itemRequestStorage.findById(itemDto.getRequestId()).get();
+			} catch (NoSuchElementException e) {
+				log.debug(e.getMessage());
+			}
 		}
 		item.setUser(UserMapper.toUser(userService.get(userId)));
 		item.setRequest(itemRequest);

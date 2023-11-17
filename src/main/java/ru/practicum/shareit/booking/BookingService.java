@@ -11,19 +11,19 @@ import ru.practicum.shareit.booking.dto.BookingDtoL;
 
 public interface BookingService {
 
-	BookingDto add(long userId, BookingDtoL bookingDto);
+    BookingDto add(long userId, BookingDtoL bookingDto);
 
-	BookingDto update(long bookingId, long userId, Boolean approved);
+    BookingDto update(long bookingId, long userId, Boolean approved);
 
-	BookingDto get(long userId, long bookingId);
+    BookingDto get(long userId, long bookingId);
 
-	List<BookingDto> getBookingsByBooker(long userId, String state, Pageable pageable);
+    List<BookingDto> getBookingsByBooker(long userId, String state, Pageable pageable);
 
-	List<BookingDto> getBookingsByOwner(long ownerId, String state, Pageable pageable);
+    List<BookingDto> getBookingsByOwner(long ownerId, String state, Pageable pageable);
 
-	List<BookingDto> getBookingsByItem(long itemId, Pageable pageable);
+    List<BookingDto> getBookingsByItem(long itemId, Pageable pageable);
 
-	List<BookingDto> findByItem_IdAndBooker_IdAndStatusAndEndBefore(long itemId, long userId, BookingStatus status,
-			LocalDateTime now, Pageable pageable);
+    List<BookingDto> findByItem_IdAndBooker_IdAndStatusAndEndBefore(long itemId, long userId, BookingStatus status,
+            LocalDateTime now, Pageable pageable);
 
 }

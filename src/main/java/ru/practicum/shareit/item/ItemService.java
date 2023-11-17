@@ -9,8 +9,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 public interface ItemService {
 
-	void clearAll();
-
 	ItemDto create(Long userId, ItemDto itemDto);
 
 	CommentDto createComment(long itemId, long userId, CommentDto commentDto, Pageable pageable);

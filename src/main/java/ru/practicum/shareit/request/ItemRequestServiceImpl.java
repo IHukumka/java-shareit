@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.UserService;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
@@ -60,9 +62,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
 	@Override
 	public ItemRequestDto getRequest(long userId, long requestId) {
-		userService.get(userId);
 		ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(findById(requestId));
-		itemRequestDto.setItems(itemService.getRequestItems(requestId));
+		itemRequestDto.setRequestor(userService.get(userId));
+		try {
+			itemRequestDto.setItems(itemService.getRequestItems(requestId));
+		} catch (ResponseStatusException e) {
+			log.debug(e.getReason());
+		}
 		return itemRequestDto;
 	}
 }
