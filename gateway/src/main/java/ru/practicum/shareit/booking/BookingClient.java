@@ -10,7 +10,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import ru.practicum.shareit.booking.dto.BookingDtoL;
+import ru.practicum.shareit.booking.dto.BookingDtoLight;
 import ru.practicum.shareit.client.BaseClient;
 
 @Service
@@ -23,7 +23,7 @@ public class BookingClient extends BaseClient {
                 .requestFactory(HttpComponentsClientHttpRequestFactory::new).build());
     }
 
-    public ResponseEntity<Object> add(long userId, BookingDtoL bookingDto) {
+    public ResponseEntity<Object> add(long userId, BookingDtoLight bookingDto) {
         return post("", userId, bookingDto);
     }
 

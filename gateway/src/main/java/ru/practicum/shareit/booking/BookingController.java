@@ -16,65 +16,71 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
-import ru.practicum.shareit.booking.dto.BookingDtoL;
+import ru.practicum.shareit.booking.dto.BookingDtoLight;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
 
-    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
-    private static final String HEADER_ITEM_ID = "X-Sharer-Item-Id";
-    private final BookingClient client;
+	private static final String HEADER_USER_ID = "X-Sharer-User-Id";
+	private static final String HEADER_ITEM_ID = "X-Sharer-Item-Id";
+	private final BookingClient client;
 
-    @PostMapping
-    public ResponseEntity<Object> createBooking(@RequestHeader(HEADER_USER_ID) Long userId,
-            @RequestBody @Valid BookingDtoL bookingDto) {
-        return client.add(userId, bookingDto);
-    }
+	@PostMapping
+	public ResponseEntity<Object> createBooking(
+			@RequestHeader(HEADER_USER_ID) long userId,
+			@RequestBody @Valid BookingDtoLight bookingDto) {
+		return client.add(userId, bookingDto);
+	}
 
-    @GetMapping(value = "/{bookingId}")
-    public ResponseEntity<Object> getBookingById(@RequestHeader(HEADER_USER_ID) Long userId,
-            @PathVariable Long bookingId) {
-        return client.get(userId, bookingId);
-    }
+	@GetMapping(value = "/{bookingId}")
+	public ResponseEntity<Object> getBookingById(
+			@RequestHeader(HEADER_USER_ID) long userId,
+			@PathVariable Long bookingId) {
+		return client.get(userId, bookingId);
+	}
 
-    @GetMapping("/item")
-    public ResponseEntity<Object> getItemBookings(@RequestHeader(HEADER_ITEM_ID) Long itemId,
-            @RequestParam(required = false, defaultValue = "ALL") String state,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        if (from.longValue() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return client.getBookingsByItem(itemId, state, from.intValue(), size.intValue());
-    }
+	@GetMapping("/item")
+	public ResponseEntity<Object> getItemBookings(
+			@RequestHeader(HEADER_ITEM_ID) long itemId,
+			@RequestParam(required = false, defaultValue = "ALL") String state,
+			@RequestParam(required = false, defaultValue = "0") int from,
+			@RequestParam(required = false, defaultValue = "10") int size) {
+		if (from < 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+		return client.getBookingsByItem(itemId, state, from, size);
+	}
 
-    @GetMapping("/owner")
-    public ResponseEntity<Object> getOwnerBookings(@RequestHeader(HEADER_USER_ID) Long userId,
-            @RequestParam(required = false, defaultValue = "ALL") String state,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        if (from.longValue() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return client.getBookingsByUser(userId, state, from.intValue(), size.intValue());
-    }
+	@GetMapping("/owner")
+	public ResponseEntity<Object> getOwnerBookings(
+			@RequestHeader(HEADER_USER_ID) long userId,
+			@RequestParam(required = false, defaultValue = "ALL") String state,
+			@RequestParam(required = false, defaultValue = "0") int from,
+			@RequestParam(required = false, defaultValue = "10") int size) {
+		if (from < 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+		return client.getBookingsByUser(userId, state, from, size);
+	}
 
-    @GetMapping
-    public ResponseEntity<Object> getUserBookings(@RequestHeader(HEADER_USER_ID) Long userId,
-            @RequestParam(required = false, defaultValue = "ALL") String state,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        if (from.longValue() < 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return client.getBookingsByBooker(userId, state, from.intValue(), size.intValue());
-    }
+	@GetMapping
+	public ResponseEntity<Object> getUserBookings(
+			@RequestHeader(HEADER_USER_ID) long userId,
+			@RequestParam(required = false, defaultValue = "ALL") String state,
+			@RequestParam(required = false, defaultValue = "0") int from,
+			@RequestParam(required = false, defaultValue = "10") int size) {
+		if (from < 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+		return client.getBookingsByBooker(userId, state, from, size);
+	}
 
-    @PatchMapping(value = "/{bookingId}")
-    public ResponseEntity<Object> updateBooking(@PathVariable Long bookingId, @RequestParam Boolean approved,
-            @RequestHeader(HEADER_USER_ID) Long userId) {
-        return client.update(userId, bookingId, approved);
-    }
+	@PatchMapping(value = "/{bookingId}")
+	public ResponseEntity<Object> updateBooking(@PathVariable long bookingId,
+			@RequestParam Boolean approved,
+			@RequestHeader(HEADER_USER_ID) long userId) {
+		return client.update(userId, bookingId, approved);
+	}
 }

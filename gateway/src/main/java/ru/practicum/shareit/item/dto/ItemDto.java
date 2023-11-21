@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.booking.dto.BookingDtoL;
+import ru.practicum.shareit.booking.dto.BookingDtoLight;
 import ru.practicum.shareit.user.dto.UserDto;
 
 @Data
@@ -35,9 +35,9 @@ public class ItemDto {
 
     private Long requestId;
 
-    private BookingDtoL lastBooking;
+    private BookingDtoLight lastBooking;
 
-    private BookingDtoL nextBooking;
+    private BookingDtoLight nextBooking;
 
     private List<CommentDto> comments;
 }

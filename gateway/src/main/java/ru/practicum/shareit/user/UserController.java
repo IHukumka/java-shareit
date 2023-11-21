@@ -23,41 +23,43 @@ import ru.practicum.shareit.user.dto.UserDto;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserClient client;
+	private final UserClient client;
 
-    @GetMapping
-    @ResponseBody
-    public ResponseEntity<Object> getAll() {
-        log.info("Получен запрос к эндпоинту: 'GET_USERS'. ");
-        return client.getAll();
-    }
+	@GetMapping
+	@ResponseBody
+	public ResponseEntity<Object> getAll() {
+		log.info("Получен запрос к эндпоинту: 'GET_USERS'. ");
+		return client.getAll();
+	}
 
-    @PostMapping
-    @ResponseBody
-    public ResponseEntity<Object> create(@RequestBody @Valid UserDto userDto, String email) {
-        log.info("Получен запрос к эндпоинту: 'POST_USERS'. ");
-        return client.create(userDto);
-    }
+	@PostMapping
+	@ResponseBody
+	public ResponseEntity<Object> create(@RequestBody @Valid UserDto userDto,
+			String email) {
+		log.info("Получен запрос к эндпоинту: 'POST_USERS'. ");
+		return client.create(userDto);
+	}
 
-    @PatchMapping(value = "/{id}")
-    @ResponseBody
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody @Valid UserDto userDto) {
-        log.info("Получен запрос к эндпоинту: 'PATCH_USERS'.");
-        return client.edit(id.longValue(), userDto);
-    }
+	@PatchMapping(value = "/{id}")
+	@ResponseBody
+	public ResponseEntity<Object> update(@PathVariable long id,
+			@RequestBody @Valid UserDto userDto) {
+		log.info("Получен запрос к эндпоинту: 'PATCH_USERS'.");
+		return client.edit(id, userDto);
+	}
 
-    @GetMapping(value = "/{id}")
-    @ResponseBody
-    public ResponseEntity<Object> get(@PathVariable Long id) {
-        log.info("Получен запрос к эндпоинту: 'GET_USERS_ID'.");
-        return client.get(id.longValue());
-    }
+	@GetMapping(value = "/{id}")
+	@ResponseBody
+	public ResponseEntity<Object> get(@PathVariable long id) {
+		log.info("Получен запрос к эндпоинту: 'GET_USERS_ID'.");
+		return client.get(id);
+	}
 
-    @DeleteMapping(value = "/{id}")
-    @ResponseBody
-    public void delete(@PathVariable Long id) {
-        log.info("Получен запрос к эндпоинту: 'DELETE_USERS_ID'.");
-        client.delete(id);
-    }
+	@DeleteMapping(value = "/{id}")
+	@ResponseBody
+	public void delete(@PathVariable long id) {
+		log.info("Получен запрос к эндпоинту: 'DELETE_USERS_ID'.");
+		client.delete(id);
+	}
 
 }

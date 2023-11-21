@@ -3,8 +3,8 @@ package ru.practicum.shareit.item.model;
 import org.springframework.context.annotation.Lazy;
 
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.UserMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.UserMapper;
 
 @Lazy
 public interface ItemMapper {

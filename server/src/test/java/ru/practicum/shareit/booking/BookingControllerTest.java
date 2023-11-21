@@ -32,9 +32,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ru.practicum.shareit.booking.Booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingDtoL;
+import ru.practicum.shareit.booking.dto.BookingDtoLite;
+import ru.practicum.shareit.booking.model.Booking.BookingStatus;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -47,7 +47,7 @@ class BookingControllerTest {
     @Autowired
     private MockMvc mvc;
     private BookingDto bookingDto;
-    private BookingDtoL bookingDtoL;
+    private BookingDtoLite bookingDtoL;
 
     @BeforeEach
     void setUp() {
@@ -57,7 +57,7 @@ class BookingControllerTest {
         bookingDto = BookingDto.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
                 .end(LocalDateTime.of(2023, 12, 30, 1, 1, 1)).item(item).booker(booker).status(BookingStatus.WAITING)
                 .build();
-        bookingDtoL = BookingDtoL.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
+        bookingDtoL = BookingDtoLite.builder().id(1L).start(LocalDateTime.of(2023, 11, 30, 1, 1, 1))
                 .end(LocalDateTime.of(2023, 12, 30, 1, 1, 1)).itemId(1L).status(BookingStatus.WAITING).build();
     }
 

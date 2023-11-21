@@ -26,58 +26,62 @@ import ru.practicum.shareit.item.dto.ItemDto;
 @RequiredArgsConstructor
 public class ItemController {
 
-    private static final String HEADER_USER_ID = "X-Sharer-User-Id";
-    private final ItemClient client;
+	private static final String HEADER_USER_ID = "X-Sharer-User-Id";
+	private final ItemClient client;
 
-    @PostMapping
-    @ResponseBody
-    public ResponseEntity<Object> create(@RequestBody @Valid ItemDto itemDto,
-            @RequestHeader(HEADER_USER_ID) Long userId) {
-        log.info("Получен запрос к эндпоинту: 'POST_ITEMS'. ");
-        return this.client.create(userId.longValue(), itemDto);
-    }
+	@PostMapping
+	@ResponseBody
+	public ResponseEntity<Object> create(@RequestBody @Valid ItemDto itemDto,
+			@RequestHeader(HEADER_USER_ID) long userId) {
+		log.info("Получен запрос к эндпоинту: 'POST_ITEMS'. ");
+		return this.client.create(userId, itemDto);
+	}
 
-    @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> createComment(@PathVariable Long itemId, @RequestHeader(HEADER_USER_ID) Long userId,
-            @RequestBody @Valid CommentDto commentDto) {
-        return client.createComment(userId.longValue(), itemId.longValue(), commentDto);
-    }
+	@PostMapping("/{itemId}/comment")
+	public ResponseEntity<Object> createComment(@PathVariable long itemId,
+			@RequestHeader(HEADER_USER_ID) long userId,
+			@RequestBody @Valid CommentDto commentDto) {
+		return client.createComment(userId, itemId, commentDto);
+	}
 
-    @DeleteMapping(value = "/{id}")
-    @ResponseBody
-    public void delete(@PathVariable Long id) {
-        log.info("Получен запрос к эндпоинту: 'DELETE_ITEMS_ID'.");
-        this.client.delete(id);
-    }
+	@DeleteMapping(value = "/{id}")
+	@ResponseBody
+	public void delete(@PathVariable long id) {
+		log.info("Получен запрос к эндпоинту: 'DELETE_ITEMS_ID'.");
+		this.client.delete(id);
+	}
 
-    @GetMapping(value = "/{id}")
-    @ResponseBody
-    public ResponseEntity<Object> get(@PathVariable Long id, @RequestHeader(HEADER_USER_ID) Long userId) {
-        log.info("Получен запрос к эндпоинту: 'GET_ITEMS_ID'.");
-        return this.client.get(userId, id);
-    }
+	@GetMapping(value = "/{id}")
+	@ResponseBody
+	public ResponseEntity<Object> get(@PathVariable long id,
+			@RequestHeader(HEADER_USER_ID) long userId) {
+		log.info("Получен запрос к эндпоинту: 'GET_ITEMS_ID'.");
+		return this.client.get(userId, id);
+	}
 
-    @GetMapping
-    public ResponseEntity<Object> getAllOwnerItems(@RequestHeader(HEADER_USER_ID) Long userId,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
-        return client.getAll(userId.longValue(), from.intValue(), size.intValue());
-    }
+	@GetMapping
+	public ResponseEntity<Object> getAllOwnerItems(
+			@RequestHeader(HEADER_USER_ID) long userId,
+			@RequestParam(required = false, defaultValue = "0") int from,
+			@RequestParam(required = false, defaultValue = "10") int size) {
+		return client.getAll(userId, from, size);
+	}
 
-    @GetMapping("/search")
-    public ResponseEntity<Object> search(@RequestParam String text,
-            @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "20") Integer size) {
-        log.info("Получен запрос к эндпоинту: 'GET_ITEMS_SEARCH'.");
-        return client.search(text, from.intValue(), size.intValue());
-    }
+	@GetMapping("/search")
+	public ResponseEntity<Object> search(@RequestParam String text,
+			@RequestParam(required = false, defaultValue = "0") int from,
+			@RequestParam(required = false, defaultValue = "20") int size) {
+		log.info("Получен запрос к эндпоинту: 'GET_ITEMS_SEARCH'.");
+		return client.search(text, from, size);
+	}
 
-    @PatchMapping(value = "/{id}")
-    @ResponseBody
-    public ResponseEntity<Object> update(@PathVariable Long id, @RequestBody ItemDto itemDto,
-            @RequestHeader(HEADER_USER_ID) Long userId) {
-        log.info("Получен запрос к эндпоинту: 'PATCH_ITEMS'.");
-        return this.client.edit(userId.longValue(), id.longValue(), itemDto);
-    }
+	@PatchMapping(value = "/{id}")
+	@ResponseBody
+	public ResponseEntity<Object> update(@PathVariable long id,
+			@RequestBody ItemDto itemDto,
+			@RequestHeader(HEADER_USER_ID) long userId) {
+		log.info("Получен запрос к эндпоинту: 'PATCH_ITEMS'.");
+		return this.client.edit(userId, id, itemDto);
+	}
 
 }

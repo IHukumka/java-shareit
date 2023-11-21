@@ -1,8 +1,5 @@
 package ru.practicum.shareit.user.dto;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,12 +9,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserDto {
 
-    private long id;
+	private long id;
 
-    @Size(max = 255)
-    private String name;
+	private String name;
 
-    @Size(max = 255)
-    @Email(message = "Email is incorrect")
-    private String email;
+	private String email;
 }

@@ -16,41 +16,49 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 @Service
 public class ItemClient extends BaseClient {
-    private static final String API_PREFIX = "/items";
+	private static final String API_PREFIX = "/items";
 
-    @Autowired
-    public ItemClient(@Value("${shareit-server.url}") String serverUrl, RestTemplateBuilder builder) {
-        super(builder.uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
-                .requestFactory(HttpComponentsClientHttpRequestFactory::new).build());
-    }
+	@Autowired
+	public ItemClient(@Value("${shareit-server.url}") String serverUrl,
+			RestTemplateBuilder builder) {
+		super(builder
+				.uriTemplateHandler(
+						new DefaultUriBuilderFactory(serverUrl + API_PREFIX))
+				.requestFactory(HttpComponentsClientHttpRequestFactory::new)
+				.build());
+	}
 
-    public ResponseEntity<Object> get(long userId, long itemId) {
-        return get("/" + itemId, userId);
-    }
+	public ResponseEntity<Object> get(long userId, long itemId) {
+		return get("/" + itemId, userId);
+	}
 
-    public ResponseEntity<Object> getAll(long userId, int from, int size) {
-        Map<String, Object> parameters = Map.of("from", from, "size", size);
-        return get("", userId, parameters);
-    }
+	public ResponseEntity<Object> getAll(long userId, int from, int size) {
+		Map<String, Object> parameters = Map.of("from", from, "size", size);
+		return get("", userId, parameters);
+	}
 
-    public ResponseEntity<Object> search(String text, int from, int size) {
-        Map<String, Object> parameters = Map.of("text", text, "from", from, "size", size);
-        return get("/search?text={text}&from={from}&size={size}", null, parameters);
-    }
+	public ResponseEntity<Object> search(String text, int from, int size) {
+		Map<String, Object> parameters = Map.of("text", text, "from", from,
+				"size", size);
+		return get("/search?text={text}&from={from}&size={size}", null,
+				parameters);
+	}
 
-    public ResponseEntity<Object> create(long userId, ItemDto itemDto) {
-        return post("", userId, itemDto);
-    }
+	public ResponseEntity<Object> create(long userId, ItemDto itemDto) {
+		return post("", userId, itemDto);
+	}
 
-    public ResponseEntity<Object> edit(long userId, long itemId, ItemDto itemDto) {
-        return patch("/" + itemId, userId, itemDto);
-    }
+	public ResponseEntity<Object> edit(long userId, long itemId,
+			ItemDto itemDto) {
+		return patch("/" + itemId, userId, itemDto);
+	}
 
-    public ResponseEntity<Object> createComment(long userId, long itemId, CommentDto commentDto) {
-        return post("/" + itemId + "/comment", userId, commentDto);
-    }
+	public ResponseEntity<Object> createComment(long userId, long itemId,
+			CommentDto commentDto) {
+		return post("/" + itemId + "/comment", userId, commentDto);
+	}
 
-    public ResponseEntity<Object> delete(long itemId) {
-        return delete("/" + itemId);
-    }
+	public ResponseEntity<Object> delete(long itemId) {
+		return delete("/" + itemId);
+	}
 }

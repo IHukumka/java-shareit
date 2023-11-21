@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class BookingDtoL {
+public class BookingDtoLight {
     private long id;
 
     @NotNull
